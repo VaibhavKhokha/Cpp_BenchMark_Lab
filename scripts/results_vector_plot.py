@@ -4,8 +4,8 @@ from pathlib import Path
 
 script_dir = Path(__file__).parent
 
-csv_path = script_dir.parent / "results" / "results.csv"
-graph_path = script_dir.parent / "plots" / "Benchmarking.png"
+csv_path = script_dir.parent / "results" / "vector_results.csv"
+graph_path = script_dir.parent / "plots" / "Vector_Benchmarking.png"
 
 df = pd.read_csv(csv_path)
 

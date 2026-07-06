@@ -1,0 +1,16 @@
+Algorithm, InputSize, TimeMicroseconds
+VectorAdd_Baseline,1000,12
+VectorAdd_Reserving,1000,10
+VectorAdd_Prealloc,1000,0
+VectorAdd_Baseline,10000,16
+VectorAdd_Reserving,10000,20
+VectorAdd_Prealloc,10000,5
+VectorAdd_Baseline,100000,111
+VectorAdd_Reserving,100000,176
+VectorAdd_Prealloc,100000,56
+VectorAdd_Baseline,1000000,1160
+VectorAdd_Reserving,1000000,1796
+VectorAdd_Prealloc,1000000,563
+VectorAdd_Baseline,10000000,11263
+VectorAdd_Reserving,10000000,18029
+VectorAdd_Prealloc,10000000,8963

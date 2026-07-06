@@ -5,15 +5,14 @@
 #include "VectorMath.hpp"
 #include "BenchMarkReporter.hpp"
 
-
-int main()
+void runVectorBenchmarks()
 {
 	Timer timer_baseline;
 	Timer timer_reserving;
 	Timer timer_prealloc;
 	BenchMarkReporter reporter;
 
-	std::vector<size_t> testSizes = {1000, 10000, 100000, 1000000, 10000000};
+	std::vector<size_t> testSizes = { 1000, 10000, 100000, 1000000, 10000000 };
 
 	for (size_t size : testSizes)
 	{
@@ -49,10 +48,15 @@ int main()
 	}
 
 	std::cout << "Saving to csv...\n";
-	reporter.saveToCsv("../../../results/results.csv");
+	reporter.saveToCsv("../../../results/vector_results.csv");
 
 	std::cout << "Visualizing..\n";
-	std::system("python \"../../../scripts/results_plot.py\"");
+	std::system("python \"../../../scripts/results_vector_plot.py\"");
 
-	std::cout << "Completed..\n";
+	std::cout << "Vector BenchMarking completed\n";
+}
+
+int main()
+{
+	runVectorBenchmarks();
 }

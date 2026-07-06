@@ -11,6 +11,6 @@
     <None Include=".gitattributes" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Test.cpp" />
+    <ClCompile Include="src\benchmark\main.cpp" />
   </ItemGroup>
 </Project>

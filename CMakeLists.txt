@@ -11,5 +11,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Define your executable target and point it to your source file
 add_executable(benchmark_runner src/benchmark/main.cpp)
 
+#defining libraries
+add_library(utils STATIC src/utils/Timer.cpp)
+
 # Tell the executable where to find header files
 target_include_directories(benchmark_runner PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+#linking libraries to the executable
+target_link_libraries(benchmark_runner PRIVATE utils)
+
+
+

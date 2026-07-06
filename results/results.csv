@@ -1,0 +1,3 @@
+Algorithm, InputSize, TimeMicroseconds
+VectorAdd_Baseline,1000000,1137
+VectorAdd_optimized,1000000,1947

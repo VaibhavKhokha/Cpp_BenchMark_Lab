@@ -33,3 +33,20 @@ I switched Visual Studio to **Release Mode** and ran the exact same code again. 
 * **What happened?** Even in Release mode, my "optimized" version lost! It turns out, using `result[i]` on an array with a fixed size is so simple that the CPU can use special hardware called **SIMD (Single Instruction, Multiple Data)** to add multiple integers together in a single clock cycle. 
 * By using `emplace_back()`, I was constantly updating the vector's internal `size` pointer on every single loop iteration. This constant state mutation confused the compiler and accidentally disabled SIMD! 
 * **Conclusion:** To get the absolute best speed, we need to completely separate memory allocation from the math loop. Memory should be allocated outside the timer, and we should only do raw pointer math inside the timer.
+
+### Experiment 3: Zero-Allocation Execution
+To finally beat the baseline, I realized I had to remove the Operating System from the timer completely. I wrote a third function (`addVectors_prealloc`) that takes a pre-allocated output vector by reference. Instead of asking for memory inside the function, I allocated it beforehand. Inside the timer, the code *only* does the raw pointer math.
+* **Baseline Time (1M elements):** 1,229 µs
+* **Pre-Allocated Time (1M elements):** 692 µs
+* **Conclusion:** It worked! By removing memory allocation (`new`, `reserve()`, or zero-initialization) from the execution path, the CPU instantly blasted through the math using SIMD hardware acceleration. I nearly cut the time in half. This proved the golden rule of high-performance loops: **Zero-Allocation Execution**.
+
+## Phase 4: Algorithmic Scaling and the Memory Wall
+In enterprise systems, you never benchmark just a single size. An algorithm might be fast for 1,000 elements but crash at 10,000,000. I automated my `main.cpp` to run all three algorithms across a scaling range (10^3 to 10^7 elements) and export the data to a CSV.
+
+* **The Data Pipeline:** I built a custom C++ `BenchMarkReporter` to store the metrics in RAM (`std::vector`) during execution and flush them to a `.csv` file only at the very end. This prevented slow disk I/O from corrupting my CPU timers.
+* **Error Handling:** I learned how to build safe libraries. I added a `throw std::invalid_argument` inside my math function if the input sizes didn't match, and caught it with a `try/catch` block in `main.cpp` so the program safely logs the error instead of silently crashing.
+* **The "Memory Wall" Discovery:** When reviewing my scaling CSV for the Pre-Allocated algorithm, I noticed a bottleneck:
+  * `1,000,000` elements = 609 µs
+  * `10,000,000` elements = 6,381 µs (10.4x slower)
+* Even though the input size multiplied exactly by 10, the execution time multiplied by **10.4**. Why? Because of the **CPU Cache**. At 1 million elements (~4MB of data), everything fits snugly inside the CPU's ultra-fast L3 cache. But at 10 million elements (~40MB), the data spills over. The CPU is forced to wait for my motherboard's slower main RAM to deliver the integers. I officially hit the hardware Memory Wall.
+

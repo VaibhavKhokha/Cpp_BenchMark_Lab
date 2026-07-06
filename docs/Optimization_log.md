@@ -1,21 +1,31 @@
-# Performance Engineering Log
-**Project:** Vector Addition Baseline & Optimization
-**Environment:** MSVC / x86 / Release Mode
+# Performance Engineering Lab Diary
+**Author:** Vaibhav  
+**Project:** Vector Addition Baseline & Optimization  
+**Environment:** MSVC / x86 / Release Mode  
 
-## Phase 3: Memory Pre-allocation & Compiler Artifacts
+## Phase 1: Building a Real Stopwatch
+Before I could optimize anything, I needed to learn how to actually measure CPU time. Normal C++ functions like `time()` aren't precise enough for modern computers. 
 
-### Experiment 1: The Debug Build Artifact
-* **Hypothesis:** Using `std::vector::reserve()` followed by `emplace_back()` will eliminate memory allocation overhead and outperform the baseline initialization `std::vector<T> result(size, 0)`.
-* **Metrics (Debug Mode):**
-  * Baseline: 5,769 µs
-  * Optimized (`reserve` + `emplace_back`): 42,301 µs
-* **Analysis:** The hypothesis failed catastrophically in Debug mode. This occurred because Debug builds disable compiler optimizations and insert safety checks. `emplace_back()` triggers a full function call with iterator/capacity checks on every iteration, whereas the baseline uses raw pointer arithmetic (`operator[]`), which remains relatively fast even without optimizations.
-* **Architectural Conclusion:** Performance must never be measured in a Debug environment. 
+* **What I built:** A custom `Timer` class using `std::chrono::high_resolution_clock` to measure time in strict microseconds. 
+* **Biggest lesson learned:** Never put `std::cout` inside a loop you are trying to benchmark! I realized that printing to the terminal window takes a massive amount of time because it has to talk to the Operating System and the monitor. If you want to benchmark the CPU, you have to just do math.
 
-### Experiment 2: State Mutation vs. Auto-Vectorization (SIMD)
-* **Hypothesis:** Re-running the exact same code in a Release build (`/O2`) will allow `emplace_back` to beat the baseline by eliminating the zero-initialization pass.
-* **Metrics (Release Mode):**
-  * Baseline: 1,436 µs
-  * Optimized (`reserve` + `emplace_back`): 1,762 µs
-* **Analysis:** The optimized version improved by 24x, but the baseline *still* outperformed it. The baseline's `operator[]` acts on a fixed-size array without mutating the vector's internal state. This allows the compiler to easily apply **SIMD (Single Instruction, Multiple Data)** auto-vectorization, adding multiple elements per clock cycle via AVX registers. Conversely, `emplace_back` increments the vector's internal `size` pointer on every single iteration. This continuous state mutation creates a data dependency that confuses the optimizer and breaks auto-vectorization.
-* **Architectural Conclusion:** Avoiding memory initialization is important, but preventing SIMD vectorization carries a heavier performance penalty. To achieve maximum throughput, we must allocate memory *outside* the math kernel and only use raw pointer arithmetic inside the tight loop (Zero-Allocation Execution).
+## Phase 2: The Baseline Algorithm & C++ Templates
+I wrote a standard, "dumb" vector addition loop (`result[i] = a[i] + b[i]`) to serve as my baseline. 
+
+* **The Template Trap:** I wanted the function to work for `int`, `float`, and `double`, so I used C++ `template <typename T>`. But I learned that templates aren't actual code; they are just blueprints. If you put the template blueprint in a `.hpp` file but hide the logic in a `.cpp` file, the compiler gets confused and throws Linker Errors.
+* **The Fix:** I learned how to use "Explicit Instantiation" at the bottom of my `.cpp` file to force the compiler to build the specific types I needed. 
+
+## Phase 3: Memory Pre-allocation & Compiler Quirks
+
+### Experiment 1: The Debug Trap
+I tried to make the baseline faster. My baseline was asking the OS for memory and filling it with zeros (`std::vector<T> result(size, 0)`), which felt slow. I wrote an optimized version using `.reserve()` and `.emplace_back()` to avoid those zeros.
+* **Baseline Time:** 5,769 µs
+* **Optimized Time:** 42,301 µs (7x slower!)
+* **What happened?** I panicked at first, but then I learned I was running the code in **Debug Mode**. In Debug mode, the C++ compiler turns off all speed optimizations and runs heavy safety checks on every single `emplace_back()` call. You can never trust benchmark numbers in Debug mode!
+
+### Experiment 2: Release Mode & The SIMD Secret
+I switched Visual Studio to **Release Mode** and ran the exact same code again. The times plummeted, making the code 24x faster!
+* **Baseline Time:** 1,436 µs
+* **Optimized Time:** 1,762 µs
+* **What happened?** Even in Release mode, my "optimized" version lost! It turns out, using `result[i]` on an array with a fixed size is so simple that the CPU can use special hardware called **SIMD (Single Instruction, Multiple Data)** to add multiple integers together in a single clock cycle. 
+* By using `emplace_back()`, I was constantly updating the vector'

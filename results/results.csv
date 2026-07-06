@@ -1,3 +1,4 @@
 Algorithm, InputSize, TimeMicroseconds
-VectorAdd_Baseline,1000000,1137
-VectorAdd_optimized,1000000,1947
+VectorAdd_Baseline,1000000,1229
+VectorAdd_reserving,1000000,1940
+VectorAdd_prealloc,1000000,692

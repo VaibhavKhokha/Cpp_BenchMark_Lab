@@ -12,7 +12,7 @@ int main()
 	BenchMarkReporter reporter;
 
 	std::vector<int> a(1000000, 1);
-	std::vector<int> b(1000000, 2);
+	std::vector<int> b(10000, 2);
 	std::vector<int> result(1000000, 0);
 
 

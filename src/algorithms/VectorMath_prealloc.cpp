@@ -1,18 +1,17 @@
 #include "VectorMath.hpp"
-#include <iostream>
+#include <stdexcept>
 
 template <typename T>
-void addVectors_prealloc(const std::vector<T>& a, const std::vector<T>& b, std::vector<T>& result)
+void addVectors_prealloc(const std::vector<T>& firstVec, const std::vector<T>& secondVec, std::vector<T>& result)
 {
-	if (a.size() != b.size())
+	if (firstVec.size() != secondVec.size())
 	{
-		std::cout << "size of vectors adding are not equal..\n";
-		return;
+		throw std::invalid_argument("Vector inputs should be of the same size...");
 	}
 
-	for (int i = 0; i < a.size(); i++)
+	for (size_t i = 0; i < firstVec.size(); i++)
 	{
-		result[i] = a[i] + b[i];
+		result[i] = firstVec[i] + secondVec[i];
 	}
 }
 

@@ -1,8 +1,14 @@
 #include "VectorMath.hpp"
+#include <stdexcept>
 
 template <typename T>
 std::vector<T> addVectors_baseline(const std::vector<T>& firstVec, const std::vector<T>& secondVec)
 {
+	if (firstVec.size() != secondVec.size())
+	{
+		throw std::invalid_argument("Vector inputs should be of the same size...");
+	}
+
 	size_t size = firstVec.size();
 
 	std::vector<T> result(size, 0);

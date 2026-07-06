@@ -9,10 +9,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Define your executable target and point it to your source file
-add_executable(benchmark_runner src/benchmark/main.cpp)
+add_executable(benchmark_runner src/benchmark/main.cpp "src/algorithms/VectorMath_baseline.cpp" "src/algorithms/VectorMath_optimized.cpp")
 
 #defining libraries
-add_library(utils STATIC src/utils/Timer.cpp)
+add_library(utils STATIC src/utils/Timer.cpp "src/algorithms/VectorMath_baseline.cpp" "src/algorithms/VectorMath_optimized.cpp")
 
 # Tell the executable where to find header files
 target_include_directories(benchmark_runner PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

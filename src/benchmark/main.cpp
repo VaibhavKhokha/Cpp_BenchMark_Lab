@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+
 #include "Timer.hpp"
 #include "VectorMath.hpp"
 #include "BenchMarkReporter.hpp"
@@ -46,6 +48,11 @@ int main()
 
 	}
 
-	reporter.saveToCsv("C:/Users/Vaibhav Khokha/Desktop/Cpp_BenchMark_Lab/results/results.csv");
+	std::cout << "Saving to csv...\n";
+	reporter.saveToCsv("../../../results/results.csv");
+
+	std::cout << "Visualizing..\n";
+	std::system("python \"../../../scripts/results_plot.py\"");
+
 	std::cout << "Completed..\n";
 }

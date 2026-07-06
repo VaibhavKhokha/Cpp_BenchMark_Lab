@@ -50,3 +50,17 @@ In enterprise systems, you never benchmark just a single size. An algorithm migh
   * `10,000,000` elements = 6,381 µs (10.4x slower)
 * Even though the input size multiplied exactly by 10, the execution time multiplied by **10.4**. Why? Because of the **CPU Cache**. At 1 million elements (~4MB of data), everything fits snugly inside the CPU's ultra-fast L3 cache. But at 10 million elements (~40MB), the data spills over. The CPU is forced to wait for my motherboard's slower main RAM to deliver the integers. I officially hit the hardware Memory Wall.
 
+## Phase 5: Visualizing Scaling and Data-Science Artifacts
+Numbers in a CSV are great, but drawing them out tells the true story of how code interacts with hardware. Because C++ isn't built for graphics, I built a Python data pipeline using `pandas` and `matplotlib` to ingest my `results.csv` and plot the scaling trends.
+
+* **What I Built:** The script groups rows by the algorithm name, sorts them by input size to ensure smooth left-to-right plotting, and maps everything out. 
+* **The Log-Log Transformation:** Because my test sizes jump exponentially from 1,000 to 10,000,000 elements, a normal graph would totally squish the smaller test sizes against the left axis. I applied a logarithmic scale to both the X and Y axes. This turned exponential curves into straight diagonal lines, making it incredibly easy to compare algorithms at scale.
+* **The Visual Proof:** Looking at the final plot, the green `Reserving` line stays firmly at the top (the slowest), the blue `Baseline` line sits in the middle, and the orange `Prealloc` line runs perfectly parallel underneath them as the undisputed speed champion. 
+* **The Log(0) Disappearing Act:** I noticed a strange visual bug on my graph—at 1,000 elements, the orange line suddenly dove straight down into the floor and disappeared! After looking closely at my data, I figured it out: my Preallocated function was so blazingly fast at 1,000 elements that my C++ stopwatch recorded exactly `0` microseconds. Because the graph uses a logarithmic scale, and the logarithm of zero ($log(0)$) is mathematically undefined, the graphing library panicked and drew the line straight down off the grid. 
+
+## Final Takeaways
+Through this first algorithm, I didn't just learn how to make code run faster; I learned how to systematically analyze performance:
+1. Debug builds lie—always benchmark in Release mode.
+2. State mutations inside a loop can ruin the compiler's ability to apply hardware acceleration (SIMD).
+3. Memory allocations belong outside the critical path (Zero-Allocation Execution).
+4. Hardware has limits, and eventually, you will smash face-first into the Memory Wall.

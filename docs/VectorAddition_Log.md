@@ -1,7 +1,10 @@
-# Performance Engineering Lab Diary
+# Algorithm Log 01: Vector Addition
 **Author:** Vaibhav  
-**Project:** Vector Addition Baseline & Optimization  
+**Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode  
+
+## Introduction
+This is the first algorithm in my performance lab. Before I can write hyper-optimized matrix multiplications or deep learning kernels, I need to understand the absolute basics of CPU memory and timing using a simple Vector Addition.
 
 ## Phase 1: Building a Real Stopwatch
 Before I could optimize anything, I needed to learn how to actually measure CPU time. Normal C++ functions like `time()` aren't precise enough for modern computers. 
@@ -28,4 +31,5 @@ I switched Visual Studio to **Release Mode** and ran the exact same code again. 
 * **Baseline Time:** 1,436 µs
 * **Optimized Time:** 1,762 µs
 * **What happened?** Even in Release mode, my "optimized" version lost! It turns out, using `result[i]` on an array with a fixed size is so simple that the CPU can use special hardware called **SIMD (Single Instruction, Multiple Data)** to add multiple integers together in a single clock cycle. 
-* By using `emplace_back()`, I was constantly updating the vector'
+* By using `emplace_back()`, I was constantly updating the vector's internal `size` pointer on every single loop iteration. This constant state mutation confused the compiler and accidentally disabled SIMD! 
+* **Conclusion:** To get the absolute best speed, we need to completely separate memory allocation from the math loop. Memory should be allocated outside the timer, and we should only do raw pointer math inside the timer.

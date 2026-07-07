@@ -4,6 +4,7 @@
 #include "Timer.hpp"
 #include "VectorMath.hpp"
 #include "BenchMarkReporter.hpp"
+#include "MatrixMath.hpp"
 
 void runVectorBenchmarks()
 {
@@ -56,7 +57,26 @@ void runVectorBenchmarks()
 	std::cout << "Vector BenchMarking completed\n";
 }
 
+void runMatrixBenchmarks()
+{
+	Timer timer_baseline;
+
+	size_t N = 500;
+	std::vector<int> matrixA(N * N, 4);
+	std::vector<int> matrixB(N * N, 2);
+	std::vector<int> result(N * N, 0);
+
+	timer_baseline.Start();
+	multiplyMatrices_baseline(matrixA, matrixB, result, N);
+	timer_baseline.Stop();
+
+	double duration_baseline = timer_baseline.elapsedMicroseconds();
+
+	std::cout << "Duration: " << duration_baseline << " Microseconds..." << std::endl;
+
+}
+
 int main()
 {
-	runVectorBenchmarks();
+	runMatrixBenchmarks();
 }

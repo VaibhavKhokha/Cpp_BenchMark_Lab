@@ -62,46 +62,60 @@ void runMatrixBenchmarks()
 	Timer timer_baseline;
 	Timer timer_loopReordered;
 	Timer timer_cacheTilling;
+	BenchMarkReporter reporter;
 
-	size_t tileSize = 64;
-	size_t N = 1000;
-	std::vector<int> matrixA(N * N, 4);
-	std::vector<int> matrixB(N * N, 2);
-	std::vector<int> result(N * N, 0);
+	std::vector<size_t> testSizes = { 250, 500, 750, 1000, 1500 };
 
-	timer_baseline.Start();
-	multiplyMatrices_baseline(matrixA, matrixB, result, N);
-	timer_baseline.Stop();
+	for (size_t N : testSizes)
+	{
+		size_t tileSize = 64;
+		std::vector<int> matrixA(N * N, 4);
+		std::vector<int> matrixB(N * N, 2);
+		std::vector<int> result(N * N, 0);
 
-	double duration_baseline = timer_baseline.elapsedMicroseconds();
+		timer_baseline.Start();
+		multiplyMatrices_baseline(matrixA, matrixB, result, N);
+		timer_baseline.Stop();
 
-	// clearing out result vector for next implementation
-	std::fill(result.begin(), result.end(), 0);
-
-	timer_loopReordered.Start();
-	multiplyMatrices_loopReordered(matrixA, matrixB, result, N);
-	timer_loopReordered.Stop();
-
-	double duration_loopReordered = timer_loopReordered.elapsedMicroseconds();
-
-	// clearing out results again
-	std::fill(result.begin(), result.end(), 0);
-
-	timer_cacheTilling.Start();
-	multiplyMatrices_cacheTiling(matrixA, matrixB, result, N, tileSize);
-	timer_cacheTilling.Stop();
-
-	double duration_cacheTiling = timer_cacheTilling.elapsedMicroseconds();
+		double duration_baseline = timer_baseline.elapsedMicroseconds();
+		reporter.addRecords("MultiplyMatrices_Baseline", N * N, duration_baseline);
 
 
-	
-	std::cout << "Duration_Baseline: " << duration_baseline << " Microseconds..." << std::endl;
-	std::cout << "Duration_LoopReordered: " << duration_loopReordered << " Microseconds..." << std::endl;
-	std::cout << "Duration_cacheTiling: " << duration_cacheTiling << " Microseconds..." << std::endl;
+		// clearing out result vector for next implementation
+		std::fill(result.begin(), result.end(), 0);
+
+		timer_loopReordered.Start();
+		multiplyMatrices_loopReordered(matrixA, matrixB, result, N);
+		timer_loopReordered.Stop();
+
+		double duration_loopReordered = timer_loopReordered.elapsedMicroseconds();
+		reporter.addRecords("MultiplyMatrices_LoopReordered", N * N, duration_loopReordered);
+
+
+		// clearing out results again
+		std::fill(result.begin(), result.end(), 0);
+
+		timer_cacheTilling.Start();
+		multiplyMatrices_cacheTiling(matrixA, matrixB, result, N, tileSize);
+		timer_cacheTilling.Stop();
+
+		double duration_cacheTiling = timer_cacheTilling.elapsedMicroseconds();
+		reporter.addRecords("MultiplyMatrices_cacheTiling", N * N, duration_cacheTiling);
+
+	}
+
+	std::cout << "Saving to Csv...\n";
+	reporter.saveToCsv("../../../results/Matrix_results.csv");
+
+	std::cout << "Visualizing..\n";
+	std::system("python \"../../../scripts/results_matrix_plot.py\"");
+
+	std::cout << "Matrix BenchMarking completed\n";
 
 }
 
 int main()
 {
+	runVectorBenchmarks();
 	runMatrixBenchmarks();
 }

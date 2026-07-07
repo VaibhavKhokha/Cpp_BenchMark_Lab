@@ -61,7 +61,9 @@ void runMatrixBenchmarks()
 {
 	Timer timer_baseline;
 	Timer timer_loopReordered;
+	Timer timer_cacheTilling;
 
+	size_t tileSize = 64;
 	size_t N = 1000;
 	std::vector<int> matrixA(N * N, 4);
 	std::vector<int> matrixB(N * N, 2);
@@ -82,9 +84,20 @@ void runMatrixBenchmarks()
 
 	double duration_loopReordered = timer_loopReordered.elapsedMicroseconds();
 
+	// clearing out results again
+	std::fill(result.begin(), result.end(), 0);
 
+	timer_cacheTilling.Start();
+	multiplyMatrices_cacheTiling(matrixA, matrixB, result, N, tileSize);
+	timer_cacheTilling.Stop();
+
+	double duration_cacheTiling = timer_cacheTilling.elapsedMicroseconds();
+
+
+	
 	std::cout << "Duration_Baseline: " << duration_baseline << " Microseconds..." << std::endl;
 	std::cout << "Duration_LoopReordered: " << duration_loopReordered << " Microseconds..." << std::endl;
+	std::cout << "Duration_cacheTiling: " << duration_cacheTiling << " Microseconds..." << std::endl;
 
 }
 

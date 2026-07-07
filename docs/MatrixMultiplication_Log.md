@@ -23,4 +23,14 @@ To fix the cache thrashing, I applied a technique called **Loop Reordering**.
   * **Conclusion:** Reordering the loops yielded a massive ~23% speedup, proving the critical importance of Spatial Locality (accessing data close together in memory).
 
 ## Phase 3: Pushing the L1 Cache (Cache Tiling)
-*Currently in progress...*
+To hit the true physical limits of the hardware, I implemented Cache Tiling (Loop Blocking). 
+* **The Architecture:** I wrapped the `i-k-j` algorithm in three outer control loops to chop the $1000 \times 1000$ matrix into tiny $64 \times 64$ sub-grids. The goal was to force the math to happen entirely inside the CPU's 32KB L1 Cache, eliminating Cache Misses completely.
+* **The Benchmark:**
+  * Baseline: 880,911 µs
+  * Loop Reordered: 642,604 µs
+  * Cache Tiling: 715,440 µs
+* **The "Overhead Trap":** Surprisingly, the tiled version was slower than the simple reordered version! I discovered three reasons why:
+  1. **Branching Overhead:** The inner loops relied on `std::min()` to prevent out-of-bounds errors, forcing the CPU to evaluate millions of extra `if/else` conditions.
+  2. **Compiler Confusion:** The 6-deep nested loop structure with dynamic bounds confused the MSVC compiler, causing it to abandon Auto-Vectorization (SIMD) safety nets.
+  3. **Loop Management:** The sheer overhead of managing 6 integer counters outweighed the memory speed gained from the L1 cache at $N=1000$.
+* **Conclusion:** While Cache Tiling is the theoretical peak of memory optimization, in raw C++, architectural overhead can defeat hardware caching. To go faster without dropping into raw Assembly language, I have to stop optimizing a single core and start using the whole CPU.

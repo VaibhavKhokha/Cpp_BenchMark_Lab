@@ -62,7 +62,7 @@ void runMatrixBenchmarks()
 	Timer timer_baseline;
 	Timer timer_loopReordered;
 
-	size_t N = 500;
+	size_t N = 1000;
 	std::vector<int> matrixA(N * N, 4);
 	std::vector<int> matrixB(N * N, 2);
 	std::vector<int> result(N * N, 0);
@@ -72,6 +72,9 @@ void runMatrixBenchmarks()
 	timer_baseline.Stop();
 
 	double duration_baseline = timer_baseline.elapsedMicroseconds();
+
+	// clearing out result vector for next implementation
+	std::fill(result.begin(), result.end(), 0);
 
 	timer_loopReordered.Start();
 	multiplyMatrices_loopReordered(matrixA, matrixB, result, N);

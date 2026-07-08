@@ -10,7 +10,7 @@ After maxing out what a single core could mathematically handle in Phase 6 (usin
 Because matrix multiplication is "Embarrassingly Parallel" (calculating Row 1 doesn't depend on Row 2), I could easily divide the matrix horizontally.
 * **The Architecture:** I used `std::thread::hardware_concurrency()` to detect my 20 cores and set up a `std::vector<std::thread>` to manage them. 
 * **The Lambda Trap:** I learned a tough lesson about C++ lambda captures. I had to use the `[&, startRow, endRow]` syntax. This passed the massive memory matrices by reference (so I didn't crash my RAM), but took hard, permanent copies of the loop coordinates so the threads wouldn't accidentally overwrite each other as they spawned.
-* **The Benchmark:** * Single-Core Best: ~683,176 µs
+* **The Benchmark:**  Single-Core Best: ~683,176 µs
   * 20-Core Thread Pool: 189,346 µs
 * **The Reality Check:** That is a 3.6x speedup. It’s a huge time saver, but it is nowhere near 20x. I realized I was slamming into physical hardware limits:
   1. **OS Overhead:** Asking Windows/Linux to allocate memory and spin up 20 threads takes thousands of microseconds.

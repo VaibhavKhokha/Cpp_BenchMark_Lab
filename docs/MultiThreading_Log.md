@@ -4,7 +4,7 @@
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores
 
 ## Introduction
-After maxing out what a single core could mathematically handle in Phase 6 (using the `Loop Reordered i-k-j` algorithm), it was time to wake up the rest of the machine. My CPU has 20 logical cores, and the goal for this phase was to build a Thread Pool to divide the massive matrix math across all of them. I honestly went into this expecting a flat 20x speedup. I was very wrong, but what I learned was much more interesting.
+After maxing out what a single core could mathematically handle in Phase 6 (using the `Loop Reordered i-k-j` algorithm), it was time to wake up the rest of the machine. My CPU has 20 logical cores and the goal for this phase was to build a Thread Pool to divide the massive matrix math across all of them. I honestly went into this expecting a flat 20x speedup. I was very wrong, but what I learned was much more interesting.
 
 ## Phase 1: The Setup & The Disappointment (N=1000)
 Because matrix multiplication is "Embarrassingly Parallel" (calculating Row 1 doesn't depend on Row 2), I could easily divide the matrix horizontally.

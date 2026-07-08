@@ -1,5 +1,5 @@
 # Algorithm Log 01: Vector Addition
-**Author:** Vaibhav Khokha
+**Author:** Vaibhav Khokha       
 **Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode  
 

@@ -23,7 +23,7 @@ Because matrix math scales at $O(N^3)$, doubling the size from 1000 to 2000 mult
 * **The N=2000 Benchmark:** 988,962 µs (0.98 seconds).
 * **The Discovery:** If my $N=1000$ multi-threaded time scaled linearly, 8 billion operations should have taken over 1.5 seconds. Instead, it finished in under a second. By throwing a mountain of work at the CPU, the thread overhead time vanished into a rounding error. The cores were finally allowed to stay awake and stretch their legs.
 
-## Phase 3: Visualizing the Bottleneck (Log-Log Scaling)
+## Phase 3: Visualizing the Bottleneck
 To get visual proof, I merged my CSV data and wrote a Python script to plot my best single-core run against my 20-core run across sizes 250 to 2000.
 * Because of the $O(N^3)$ explosion, I had to use a `log-log` scale to keep the lines readable.
 * **The Verdict:** The graph was perfect. At the bottom left ($N=250$), the single-core and multi-core lines were almost touching, visually proving that OS overhead makes threads useless for tiny workloads. At the top right ($N=2000$), the gap blew wide open. 

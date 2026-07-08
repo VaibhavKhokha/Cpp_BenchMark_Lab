@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <thread>
 
 #include "Timer.hpp"
 #include "VectorMath.hpp"
@@ -114,8 +115,44 @@ void runMatrixBenchmarks()
 
 }
 
+void runThreadingBenchmarks()
+{
+	Timer timer_multiThreaded;
+	BenchMarkReporter reporter;
+
+	size_t numThreads = std::thread::hardware_concurrency();
+	std::cout << "Threads: " << numThreads << std::endl;
+
+	std::vector<size_t> testSizes = { 250, 500, 750, 1000, 1500, 2000 };
+
+	for (size_t N : testSizes)
+	{
+		std::vector<int> matrixA(N * N, 2);
+		std::vector<int> matrixB(N * N, 4);
+		std::vector<int> result(N * N, 0);
+
+		timer_multiThreaded.Start();
+		multiplyMatrices_multiThreaded(matrixA, matrixB, result, N, numThreads);
+		timer_multiThreaded.Stop();
+
+		double duration_multiThreaded = timer_multiThreaded.elapsedMicroseconds();
+
+		reporter.addRecords("MultiplyMatrices_MultiThreading", N*N, duration_multiThreaded);
+
+	}
+
+	std::cout << "Saving to Csv...\n";
+	reporter.saveToCsv("../../../results/Threading_results.csv");
+
+	std::cout << "Visualizing..\n";
+	std::system("python \"../../../scripts/results_threading_plot.py\"");
+
+	std::cout << "Threading BenchMarking completed\n";
+
+	
+}
+
 int main()
 {
-	runVectorBenchmarks();
-	runMatrixBenchmarks();
+	runThreadingBenchmarks();
 }

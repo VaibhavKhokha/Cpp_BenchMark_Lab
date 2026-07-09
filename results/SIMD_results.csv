@@ -1,13 +1,13 @@
 Algorithm, InputSize, TimeMicroseconds
-MatrixMultiply_SIMD_1Core,65536,1832
-MatrixMultiply_SIMD_MultiThreaded,65536,21603
-MatrixMultiply_SIMD_1Core,262144,19173
-MatrixMultiply_SIMD_MultiThreaded,262144,24880
-MatrixMultiply_SIMD_1Core,589824,51375
-MatrixMultiply_SIMD_MultiThreaded,589824,22493
-MatrixMultiply_SIMD_1Core,1000000,111417
-MatrixMultiply_SIMD_MultiThreaded,1000000,36101
-MatrixMultiply_SIMD_1Core,2359296,399870
-MatrixMultiply_SIMD_MultiThreaded,2359296,93250
-MatrixMultiply_SIMD_1Core,4000000,1.08683e+06
-MatrixMultiply_SIMD_MultiThreaded,4000000,177894
+MatrixMultiply_SIMD_1Core,65536,1814
+MatrixMultiply_SIMD_MultiThreaded,65536,1986
+MatrixMultiply_SIMD_1Core,262144,15209
+MatrixMultiply_SIMD_MultiThreaded,262144,7885
+MatrixMultiply_SIMD_1Core,589824,57014
+MatrixMultiply_SIMD_MultiThreaded,589824,55571
+MatrixMultiply_SIMD_1Core,1000000,113316
+MatrixMultiply_SIMD_MultiThreaded,1000000,50086
+MatrixMultiply_SIMD_1Core,2359296,427561
+MatrixMultiply_SIMD_MultiThreaded,2359296,97470
+MatrixMultiply_SIMD_1Core,4000000,1.06074e+06
+MatrixMultiply_SIMD_MultiThreaded,4000000,178666

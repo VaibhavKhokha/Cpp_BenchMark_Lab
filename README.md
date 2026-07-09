@@ -13,11 +13,10 @@ A C++ benchmarking and algorithm optimization laboratory.
 ## Project Structure
 
 ```
-src/            Algorithm implementations
+src/algorithms  Algorithm implementations
 include/        Header files
-benchmarks/     Benchmark code
-tests/          Unit tests
+src/benchmark   Benchmark code(main.cpp)
 docs/           Documentation
-scripts/        Utility scripts
-data/           Test datasets
+scripts/        Utility Python scripts
+src/utils       Utility implementations
 ```

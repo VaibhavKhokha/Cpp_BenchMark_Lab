@@ -141,6 +141,7 @@ void runThreadingBenchmarks()
 
 	}
 
+
 	std::cout << "Saving to Csv...\n";
 	reporter.saveToCsv("../../../results/Threading_results.csv");
 
@@ -152,7 +153,68 @@ void runThreadingBenchmarks()
 	
 }
 
+void runSIMDBenchmarks()
+{
+	Timer timer_SIMD;
+	Timer timer_multiThreaded_SIMD;
+	BenchMarkReporter reporter;
+
+	//perfect multiple of 8 due to usage of AVX2 registers
+	std::vector<size_t> testSizes = { 256, 512, 768, 1000, 1536, 2000};
+	size_t numThreads = 20;
+
+	for (size_t N : testSizes)
+	{
+		std::vector<int> matrixA(N * N, 2);
+		std::vector<int> matrixB(N * N, 4);
+		std::vector<int> result(N * N, 0);
+
+		timer_SIMD.Start();
+		multiplyMatrices_SIMD(matrixA, matrixB, result, N);
+		timer_SIMD.Stop();
+
+		double duration_SIMD = timer_SIMD.elapsedMicroseconds();
+		reporter.addRecords("MatrixMultiply_SIMD_1Core", N*N, duration_SIMD);
+
+
+		std::fill(result.begin(), result.end(), 0);
+
+
+
+		timer_multiThreaded_SIMD.Start();
+		multiplyMatrices_multiThreaded_SIMD(matrixA, matrixB, result, N, numThreads);
+		timer_multiThreaded_SIMD.Stop();
+
+		double duration_multiThreaded_SIMD = timer_multiThreaded_SIMD.elapsedMicroseconds();
+		reporter.addRecords("MatrixMultiply_SIMD_MultiThreaded", N*N, duration_multiThreaded_SIMD);
+	}
+
+	std::cout << "Saving to CSV...\n";
+	reporter.saveToCsv("../../../results/SIMD_results.csv");
+
+	std::cout << "Visualizing...\n";
+	std::system("python \"../../../scripts/results_SIMD_plot.py\"");
+
+	std::cout << "SIMD BenchMarking completed\n";
+
+	
+}
+
+void MatrixMathCompiledPlotting()
+{
+	std::cout << "<=================================================>\n";
+	std::cout << "======Visualizing Compiled Matrix Math Plot========\n";
+	std::cout << "<=================================================>\n";
+
+	std::system("python \"../../../scripts/results_MatrixMath_Final_plot.py\"");
+}
+
 int main()
 {
+	runMatrixBenchmarks();
 	runThreadingBenchmarks();
+	runSIMDBenchmarks();
+	
+	MatrixMathCompiledPlotting();
+
 }

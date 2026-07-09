@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(benchmark_runner src/benchmark/main.cpp)
 
 #defining libraries
-add_library(utils STATIC src/utils/Timer.cpp "src/algorithms/VectorMath_baseline.cpp" "src/algorithms/VectorMath_reserving.cpp" "src/utils/BenchMarkReporter.cpp" "src/algorithms/VectorMath_prealloc.cpp" "src/algorithms/MatrixMath_baseline.cpp" "src/algorithms/MatrixMath_loopReordered.cpp" "src/algorithms/MatrixMath_cacheTiling.cpp" "src/algorithms/MatrixMath_multiThreaded.cpp")
+add_library(utils STATIC src/utils/Timer.cpp "src/algorithms/VectorMath_baseline.cpp" "src/algorithms/VectorMath_reserving.cpp" "src/utils/BenchMarkReporter.cpp" "src/algorithms/VectorMath_prealloc.cpp" "src/algorithms/MatrixMath_baseline.cpp" "src/algorithms/MatrixMath_loopReordered.cpp" "src/algorithms/MatrixMath_cacheTiling.cpp" "src/algorithms/MatrixMath_multiThreaded.cpp" "src/algorithms/MatrixMath_SIMD.cpp" "src/algorithms/MatrixMath_multiThreaded_SIMD.cpp")
 
 # Tell the executable where to find header files
 target_include_directories(benchmark_runner PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -22,6 +22,7 @@ best_simd_multi = df_simd[df_simd["Algorithm"] == "MatrixMultiply_SIMD_MultiThre
 
 df_combined = pd.concat([best_matrix, best_thread, best_simd_single, best_simd_multi])
 
+
 plt.figure(figsize = (10, 6))
 
 for algo, grp in df_combined.groupby("Algorithm"):

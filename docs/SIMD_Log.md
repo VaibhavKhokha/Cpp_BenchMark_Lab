@@ -30,4 +30,4 @@ I wrote a Python master script to aggregate the CSV data from all previous phase
 * **Amdahl's Law:** As the matrices scaled to N=2000, the thread overhead vanished and the Multi-Threaded SIMD line completely dominated, hitting the absolute theoretical limit of my physical motherboard and memory bandwidth.
 
 ## Final Thoughts
-This phase marked the transition from writing software to engineering systems. I proved that taking control of memory traffic (cache locality), thread scheduling, and silicon instructions yields results standard code can never reach. With the CPU maxed out, it is time to look at the final bottleneck: bypassing OS memory allocation (`std::vector`) and building Custom Memory Arenas.
+This phase marked the transition from writing software to engineering systems. I proved that taking control of memory traffic (cache locality), thread scheduling, and silicon instructions yields results standard code can never reach.

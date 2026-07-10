@@ -18,3 +18,7 @@ void multiplyMatrices_SIMD(const std::vector<T>& firstMatrix, const std::vector<
 
 template<typename T>
 void multiplyMatrices_multiThreaded_SIMD(const std::vector<T>& firstMatrix, const std::vector<T>& secondMatrix, std::vector<T>& resultMatrix, size_t dimension, size_t numThreads);
+
+template<typename T>
+void multiplyMatrices_MemoryArena_SIMD(const T* firstMatrix, const T* secondMatrix, T* resultMatrix, size_t dimension, size_t numThreads);
+

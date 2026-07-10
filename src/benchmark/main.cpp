@@ -6,6 +6,7 @@
 #include "VectorMath.hpp"
 #include "BenchMarkReporter.hpp"
 #include "MatrixMath.hpp"
+#include "MemoryArena.hpp"
 
 void runVectorBenchmarks()
 {
@@ -161,7 +162,7 @@ void runSIMDBenchmarks()
 
 	//perfect multiple of 8 due to usage of AVX2 registers
 	std::vector<size_t> testSizes = { 256, 512, 768, 1000, 1536, 2000};
-	size_t numThreads = 20;
+	size_t numThreads = std::thread::hardware_concurrency();
 
 	for (size_t N : testSizes)
 	{
@@ -209,12 +210,50 @@ void MatrixMathCompiledPlotting()
 	std::system("python \"../../../scripts/results_MatrixMath_Final_plot.py\"");
 }
 
+void runArenaBenchmarks()
+{
+	//500 MB memory allocated
+	size_t memory = 500 * 1024 * 1024;
+	MemoryArena arena(memory);
+
+	Timer timer_Arena;
+	BenchMarkReporter reporter;
+
+	std::vector<size_t> testSizes = { 256, 512, 1024, 2048 };
+	size_t numThreads = std::thread::hardware_concurrency();
+
+	for (size_t N : testSizes)
+	{
+		int* matrixA = static_cast<int*>(arena.allocate(N * N * sizeof(int))); // as it is int --> 4bytes
+		std::fill_n(matrixA, N * N, 2);
+
+		int* matrixB = static_cast<int*>(arena.allocate(N * N * sizeof(int)));
+		std::fill_n(matrixB, N * N, 4);
+
+		int* result = static_cast<int*>(arena.allocate(N * N * sizeof(int)));
+		std::fill_n(result, N * N, 0);
+
+		timer_Arena.Start();
+		multiplyMatrices_MemoryArena_SIMD(matrixA, matrixB, result, N, numThreads);
+		timer_Arena.Stop();
+
+		double duration_Arena = timer_Arena.elapsedMicroseconds();
+
+		reporter.addRecords("MatrixMultiply_MemoryArena_SIMD", N*N, duration_Arena);
+
+		arena.reset();
+
+	}
+
+	std::cout << "Saving to CSV...\n";
+	reporter.saveToCsv("../../../results/Memory_Arena_results.csv");
+
+	std::cout << "Visualizing...\n";
+	std::system("python \"../../../scripts/results_Arena_plot.py\"");
+}
+
 int main()
 {
-	runMatrixBenchmarks();
-	runThreadingBenchmarks();
-	runSIMDBenchmarks();
-	
-	MatrixMathCompiledPlotting();
+	runArenaBenchmarks();
 
 }

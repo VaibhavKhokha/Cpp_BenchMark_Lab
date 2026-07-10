@@ -4,8 +4,8 @@ from pathlib import Path
 
 script_dir = Path(__file__).parent
 
-simd_csv = script_dir.parent / "results" / "SIMD_results.csv"
-Memory_csv = script_dir.parent / "results" / "Memory_Arena_results.csv"
+simd_csv = script_dir.parent / "results" / "Matrix" / "SIMD_results.csv"
+Memory_csv = script_dir.parent / "results" / "Matrix" / "Memory_Arena_results.csv"
 
 df_simd = pd.read_csv(simd_csv)
 df_memory = pd.read_csv(Memory_csv)

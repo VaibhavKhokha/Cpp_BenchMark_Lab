@@ -5,8 +5,8 @@ from pathlib import Path
 script_dir = Path(__file__).parent
 
 
-threading_csv = script_dir.parent / "results" / "Threading_results.csv"
-matrix_csv = script_dir.parent / "results" / "Matrix_results.csv"
+threading_csv = script_dir.parent / "results" / "Matrix" / "Threading_results.csv"
+matrix_csv = script_dir.parent / "results" / "Matrix" / "Matrix_results.csv"
 graph_path = script_dir.parent / "plots" / "Threading_Benchmarking.png"
 
 

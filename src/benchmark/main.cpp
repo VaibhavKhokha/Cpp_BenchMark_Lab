@@ -51,7 +51,7 @@ void runVectorBenchmarks()
 	}
 
 	std::cout << "Saving to csv...\n";
-	reporter.saveToCsv("../../../results/vector_results.csv");
+	reporter.saveToCsv("../../../results/Vector/vector_results.csv");
 
 	std::cout << "Visualizing..\n";
 	std::system("python \"../../../scripts/results_vector_plot.py\"");
@@ -107,7 +107,7 @@ void runMatrixBenchmarks()
 	}
 
 	std::cout << "Saving to Csv...\n";
-	reporter.saveToCsv("../../../results/Matrix_results.csv");
+	reporter.saveToCsv("../../../results/Matrix/Matrix_results.csv");
 
 	std::cout << "Visualizing..\n";
 	std::system("python \"../../../scripts/results_matrix_plot.py\"");
@@ -144,7 +144,7 @@ void runThreadingBenchmarks()
 
 
 	std::cout << "Saving to Csv...\n";
-	reporter.saveToCsv("../../../results/Threading_results.csv");
+	reporter.saveToCsv("../../../results/Matrix/Threading_results.csv");
 
 	std::cout << "Visualizing..\n";
 	std::system("python \"../../../scripts/results_threading_plot.py\"");
@@ -191,7 +191,7 @@ void runSIMDBenchmarks()
 	}
 
 	std::cout << "Saving to CSV...\n";
-	reporter.saveToCsv("../../../results/SIMD_results.csv");
+	reporter.saveToCsv("../../../results/Matrix/SIMD_results.csv");
 
 	std::cout << "Visualizing...\n";
 	std::system("python \"../../../scripts/results_SIMD_plot.py\"");
@@ -199,15 +199,6 @@ void runSIMDBenchmarks()
 	std::cout << "SIMD BenchMarking completed\n";
 
 	
-}
-
-void MatrixMathCompiledPlotting()
-{
-	std::cout << "<=================================================>\n";
-	std::cout << "======Visualizing Compiled Matrix Math Plot========\n";
-	std::cout << "<=================================================>\n";
-
-	std::system("python \"../../../scripts/results_MatrixMath_Final_plot.py\"");
 }
 
 void runArenaBenchmarks()
@@ -246,14 +237,41 @@ void runArenaBenchmarks()
 	}
 
 	std::cout << "Saving to CSV...\n";
-	reporter.saveToCsv("../../../results/Memory_Arena_results.csv");
+	reporter.saveToCsv("../../../results/Matrix/Memory_Arena_results.csv");
 
 	std::cout << "Visualizing...\n";
 	std::system("python \"../../../scripts/results_Arena_plot.py\"");
 }
 
+
+void MatrixMathCompiledPlotting_BestAlgo()
+{
+	std::cout << "<=================================================>\n";
+	std::cout << "==Visualizing Compiled Matrix Math Plot For Best Algo==\n";
+	std::cout << "<=================================================>\n";
+
+	std::system("python \"../../../scripts/results_MatrixMath_Final_plot_BestAlgo.py\"");
+}
+
+void CompiledPlotting()
+{
+	std::cout << "<=================================================>\n";
+	std::cout << "=================Compiled Plotting================\n";
+	std::cout << "<=================================================>\n";
+
+	std::system("python \"../../../scripts/Compiled_Plotting.py\"");
+}
+
+
 int main()
 {
+	runVectorBenchmarks();
+	runMatrixBenchmarks();
+	runThreadingBenchmarks();
+	runSIMDBenchmarks();
 	runArenaBenchmarks();
+
+	MatrixMathCompiledPlotting_BestAlgo();
+	CompiledPlotting();
 
 }

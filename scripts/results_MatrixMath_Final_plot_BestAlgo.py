@@ -4,9 +4,9 @@ from pathlib import Path
 
 script_dir = Path(__file__).parent
 
-matrix_csv = script_dir.parent / "results" / "Matrix_results.csv"
-threading_csv =  script_dir.parent / "results" / "Threading_results.csv"
-simd_csv = script_dir.parent / "results" / "SIMD_results.csv"
+matrix_csv = script_dir.parent / "results" / "Matrix" / "Matrix_results.csv"
+threading_csv =  script_dir.parent / "results" / "Matrix" / "Threading_results.csv"
+simd_csv = script_dir.parent / "results" / "Matrix" / "SIMD_results.csv"
 
 df_matrix = pd.read_csv(matrix_csv)
 df_thread = pd.read_csv(threading_csv)
@@ -44,6 +44,6 @@ plt.ylabel("Time in Microseconds")
 plt.title(" The Final Compiled (Matrix Math) Hardware Scaling ")
 plt.grid(True, which = "both", ls = "--", alpha = 0.5)
 
-graph_path = script_dir.parent / "plots" / "MatrixMath_Compiled_Benchmarking.png"
+graph_path = script_dir.parent / "plots" / "MatrixMath_Compiled_Benchmarking_BestAlgo.png"
 plt.savefig(graph_path)
 plt.show()

@@ -1,0 +1,7 @@
+Algorithm, InputSize, TimeMicroseconds
+MultiplyMatrices_MultiThreading,62500,35767
+MultiplyMatrices_MultiThreading,250000,35041
+MultiplyMatrices_MultiThreading,562500,60838
+MultiplyMatrices_MultiThreading,1000000,113927
+MultiplyMatrices_MultiThreading,2250000,347972
+MultiplyMatrices_MultiThreading,4000000,811845

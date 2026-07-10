@@ -1,0 +1,16 @@
+Algorithm, InputSize, TimeMicroseconds
+MultiplyMatrices_Baseline,62500,11714
+MultiplyMatrices_LoopReordered,62500,10533
+MultiplyMatrices_cacheTiling,62500,10259
+MultiplyMatrices_Baseline,250000,85355
+MultiplyMatrices_LoopReordered,250000,80986
+MultiplyMatrices_cacheTiling,250000,84556
+MultiplyMatrices_Baseline,562500,313872
+MultiplyMatrices_LoopReordered,562500,276530
+MultiplyMatrices_cacheTiling,562500,312003
+MultiplyMatrices_Baseline,1000000,859859
+MultiplyMatrices_LoopReordered,1000000,608825
+MultiplyMatrices_cacheTiling,1000000,709495
+MultiplyMatrices_Baseline,2250000,3.23415e+06
+MultiplyMatrices_LoopReordered,2250000,2.12731e+06
+MultiplyMatrices_cacheTiling,2250000,2.37819e+06

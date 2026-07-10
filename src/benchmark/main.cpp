@@ -239,7 +239,7 @@ void runArenaBenchmarks()
 
 		double duration_Arena = timer_Arena.elapsedMicroseconds();
 
-		reporter.addRecords("MatrixMultiply_MemoryArena_SIMD", N*N, duration_Arena);
+		reporter.addRecords("MatrixMultiply_MemoryArena_SIMD", N * N, duration_Arena);
 
 		arena.reset();
 

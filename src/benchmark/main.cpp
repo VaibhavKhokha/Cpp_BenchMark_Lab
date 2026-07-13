@@ -322,6 +322,7 @@ void runImageBenchmarks()
 void runSortingBenchmarks()
 {
 	Timer timer_baseline;
+	Timer timer_Radix;
 
 	std::vector<int> array = generateRandomArray<int>(100000000);
 
@@ -333,6 +334,15 @@ void runSortingBenchmarks()
 
 	std::cout << "Duration of sorting_Baseline: " << duration_baseline << " Microseconds...\n";
 
+	array = generateRandomArray<int>(100000000);
+
+	timer_Radix.Start();
+	sort_Radix(array);
+	timer_Radix.Stop();
+
+	double duration_Radix = timer_Radix.elapsedMicroseconds();
+
+	std::cout << "Duration of Base-256 Sort_Radix: " << duration_Radix << " Microseconds...\n";
 
 }
 

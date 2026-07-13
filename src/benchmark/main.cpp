@@ -13,9 +13,7 @@
 
 void runVectorBenchmarks()
 {
-	Timer timer_baseline;
-	Timer timer_reserving;
-	Timer timer_prealloc;
+	Timer timer;
 	BenchMarkReporter reporter;
 
 	std::vector<size_t> testSizes = { 1000, 10000, 100000, 1000000, 10000000 };
@@ -27,27 +25,27 @@ void runVectorBenchmarks()
 		std::vector<int> result(size, 0);
 
 		// Baseline
-		timer_baseline.Start();
+		timer.Start();
 		auto result_baseline = addVectors_baseline(a, b);
-		timer_baseline.Stop();
+		timer.Stop();
 
-		double duration_baseline = timer_baseline.elapsedMicroseconds();
+		double duration_baseline = timer.elapsedMicroseconds();
 		reporter.addRecords("VectorAdd_Baseline", size, duration_baseline);
 
 		//Reserving memory in vector
-		timer_reserving.Start();
+		timer.Start();
 		auto result_reserving = addVectors_reserving(a, b);
-		timer_reserving.Stop();
+		timer.Stop();
 
-		double duration_reserving = timer_reserving.elapsedMicroseconds();
+		double duration_reserving = timer.elapsedMicroseconds();
 		reporter.addRecords("VectorAdd_Reserving", size, duration_reserving);
 
 		//using preallocated vector and just putting values in it
-		timer_prealloc.Start();
+		timer.Start();
 		addVectors_prealloc(a, b, result);
-		timer_prealloc.Stop();
+		timer.Stop();
 
-		double duration_prealloc = timer_prealloc.elapsedMicroseconds();
+		double duration_prealloc = timer.elapsedMicroseconds();
 		reporter.addRecords("VectorAdd_Prealloc", size, duration_prealloc);
 
 
@@ -64,9 +62,7 @@ void runVectorBenchmarks()
 
 void runMatrixBenchmarks()
 {
-	Timer timer_baseline;
-	Timer timer_loopReordered;
-	Timer timer_cacheTilling;
+	Timer timer;
 	BenchMarkReporter reporter;
 
 	std::vector<size_t> testSizes = { 250, 500, 750, 1000, 1500 };
@@ -78,33 +74,33 @@ void runMatrixBenchmarks()
 		std::vector<int> matrixB(N * N, 2);
 		std::vector<int> result(N * N, 0);
 
-		timer_baseline.Start();
+		timer.Start();
 		multiplyMatrices_baseline(matrixA, matrixB, result, N);
-		timer_baseline.Stop();
+		timer.Stop();
 
-		double duration_baseline = timer_baseline.elapsedMicroseconds();
+		double duration_baseline = timer.elapsedMicroseconds();
 		reporter.addRecords("MultiplyMatrices_Baseline", N * N, duration_baseline);
 
 
 		// clearing out result vector for next implementation
 		std::fill(result.begin(), result.end(), 0);
 
-		timer_loopReordered.Start();
+		timer.Start();
 		multiplyMatrices_loopReordered(matrixA, matrixB, result, N);
-		timer_loopReordered.Stop();
+		timer.Stop();
 
-		double duration_loopReordered = timer_loopReordered.elapsedMicroseconds();
+		double duration_loopReordered = timer.elapsedMicroseconds();
 		reporter.addRecords("MultiplyMatrices_LoopReordered", N * N, duration_loopReordered);
 
 
 		// clearing out results again
 		std::fill(result.begin(), result.end(), 0);
 
-		timer_cacheTilling.Start();
+		timer.Start();
 		multiplyMatrices_cacheTiling(matrixA, matrixB, result, N, tileSize);
-		timer_cacheTilling.Stop();
+		timer.Stop();
 
-		double duration_cacheTiling = timer_cacheTilling.elapsedMicroseconds();
+		double duration_cacheTiling = timer.elapsedMicroseconds();
 		reporter.addRecords("MultiplyMatrices_cacheTiling", N * N, duration_cacheTiling);
 
 	}
@@ -121,7 +117,7 @@ void runMatrixBenchmarks()
 
 void runThreadingBenchmarks()
 {
-	Timer timer_multiThreaded;
+	Timer timer;
 	BenchMarkReporter reporter;
 
 	size_t numThreads = std::thread::hardware_concurrency();
@@ -135,11 +131,11 @@ void runThreadingBenchmarks()
 		std::vector<int> matrixB(N * N, 4);
 		std::vector<int> result(N * N, 0);
 
-		timer_multiThreaded.Start();
+		timer.Start();
 		multiplyMatrices_multiThreaded(matrixA, matrixB, result, N, numThreads);
-		timer_multiThreaded.Stop();
+		timer.Stop();
 
-		double duration_multiThreaded = timer_multiThreaded.elapsedMicroseconds();
+		double duration_multiThreaded = timer.elapsedMicroseconds();
 
 		reporter.addRecords("MultiplyMatrices_MultiThreading", N*N, duration_multiThreaded);
 
@@ -159,8 +155,8 @@ void runThreadingBenchmarks()
 
 void runSIMDBenchmarks()
 {
-	Timer timer_SIMD;
-	Timer timer_multiThreaded_SIMD;
+	Timer timer;
+
 	BenchMarkReporter reporter;
 
 	//perfect multiple of 8 due to usage of AVX2 registers
@@ -173,11 +169,11 @@ void runSIMDBenchmarks()
 		std::vector<int> matrixB(N * N, 4);
 		std::vector<int> result(N * N, 0);
 
-		timer_SIMD.Start();
+		timer.Start();
 		multiplyMatrices_SIMD(matrixA, matrixB, result, N);
-		timer_SIMD.Stop();
+		timer.Stop();
 
-		double duration_SIMD = timer_SIMD.elapsedMicroseconds();
+		double duration_SIMD = timer.elapsedMicroseconds();
 		reporter.addRecords("MatrixMultiply_SIMD_1Core", N*N, duration_SIMD);
 
 
@@ -185,11 +181,11 @@ void runSIMDBenchmarks()
 
 
 
-		timer_multiThreaded_SIMD.Start();
+		timer.Start();
 		multiplyMatrices_multiThreaded_SIMD(matrixA, matrixB, result, N, numThreads);
-		timer_multiThreaded_SIMD.Stop();
+		timer.Stop();
 
-		double duration_multiThreaded_SIMD = timer_multiThreaded_SIMD.elapsedMicroseconds();
+		double duration_multiThreaded_SIMD = timer.elapsedMicroseconds();
 		reporter.addRecords("MatrixMultiply_SIMD_MultiThreaded", N*N, duration_multiThreaded_SIMD);
 	}
 
@@ -267,18 +263,16 @@ void CompiledPlotting()
 
 void runImageBenchmarks()
 {
-	Timer timer_baseline;
-	Timer timer_optimized;
-	Timer timer_multiThreaded;
+	Timer timer;
 	BenchMarkReporter reporter;
 
 	Image img = loadImage("../../../assets/test_image.png");
 
-	timer_baseline.Start();
+	timer.Start();
 	grayscale_baseline(img);
-	timer_baseline.Stop();
+	timer.Stop();
 
-	double duration_baseline = timer_baseline.elapsedMicroseconds();
+	double duration_baseline = timer.elapsedMicroseconds();
 	std::cout << "Duration for ImageGrayscale_Baseline: " << duration_baseline << " Microseconds..\n";
 
 	saveImage("../../../assets/output_baseline.png", img);
@@ -286,11 +280,11 @@ void runImageBenchmarks()
 
 	img = loadImage("../../../assets/test_image.png");
 
-	timer_optimized.Start();
+	timer.Start();
 	grayscale_optimized(img);
-	timer_optimized.Stop();
+	timer.Stop();
 
-	double duration_optimized = timer_optimized.elapsedMicroseconds();
+	double duration_optimized = timer.elapsedMicroseconds();
 	std::cout << "Duration for ImageGrayscale_optimized: " << duration_optimized << " Microseconds...\n";
 
 	saveImage("../../../assets/output_optimized.png", img);
@@ -298,11 +292,11 @@ void runImageBenchmarks()
 
 	img = loadImage("../../../assets/test_image.png");
 
-	timer_multiThreaded.Start();
+	timer.Start();
 	grayscale_multithreaded(img, std::thread::hardware_concurrency());
-	timer_multiThreaded.Stop();
+	timer.Stop();
 
-	double duration_multiThreaded = timer_multiThreaded.elapsedMicroseconds();
+	double duration_multiThreaded = timer.elapsedMicroseconds();
 	std::cout << "Duration for ImageGrayscale_MultiThreaded: " << duration_multiThreaded << " Microseconds...\n";
 
 	saveImage("../../../assets/output_multiThreaded.png", img);
@@ -321,28 +315,38 @@ void runImageBenchmarks()
 
 void runSortingBenchmarks()
 {
-	Timer timer_baseline;
-	Timer timer_Radix;
+	Timer timer;
 
-	std::vector<int> array = generateRandomArray<int>(100000000);
+	BenchMarkReporter reporter;
 
-	timer_baseline.Start();
+	size_t size = 100000000;
+
+	std::vector<int> array = generateRandomArray<int>(size);
+
+	timer.Start();
 	sort_Baseline(array);
-	timer_baseline.Stop();
+	timer.Stop();
 
-	double duration_baseline = timer_baseline.elapsedMicroseconds();
+	double duration_baseline = timer.elapsedMicroseconds();
 
-	std::cout << "Duration of sorting_Baseline: " << duration_baseline << " Microseconds...\n";
+	reporter.addRecords("Sorting_Baseline", size, duration_baseline);
 
-	array = generateRandomArray<int>(100000000);
 
-	timer_Radix.Start();
+	array = generateRandomArray<int>(size);
+
+	timer.Start();
 	sort_Radix(array);
-	timer_Radix.Stop();
+	timer.Stop();
 
-	double duration_Radix = timer_Radix.elapsedMicroseconds();
+	double duration_Radix = timer.elapsedMicroseconds();
 
-	std::cout << "Duration of Base-256 Sort_Radix: " << duration_Radix << " Microseconds...\n";
+	reporter.addRecords("Radix_Sort", size, duration_Radix);
+
+	std::cout << "Saving to CSV...\n";
+	reporter.saveToCsv("../../../results/Sorting/Sorting_results.csv");
+
+	std::cout << "Visualizing...\n";
+	std::system("python \"../../../scripts/results_Sorting_plot.py\"");
 
 }
 

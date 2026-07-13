@@ -1,0 +1,3 @@
+Algorithm, InputSize, TimeMicroseconds
+Sorting_Baseline,100000000,6.47573e+06
+Radix_Sort,100000000,837345

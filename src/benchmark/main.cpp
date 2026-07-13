@@ -269,6 +269,7 @@ void runImageBenchmarks()
 	Timer timer_baseline;
 	Timer timer_optimized;
 	Timer timer_multiThreaded;
+	BenchMarkReporter reporter;
 
 	Image img = loadImage("../../../assets/test_image.png");
 
@@ -280,6 +281,7 @@ void runImageBenchmarks()
 	std::cout << "Duration for ImageGrayscale_Baseline: " << duration_baseline << " Microseconds..\n";
 
 	saveImage("../../../assets/output_baseline.png", img);
+	reporter.addRecords("ImageGrayscaling_Baseline", img.height * img.width, duration_baseline);
 
 	img = loadImage("../../../assets/test_image.png");
 
@@ -290,7 +292,8 @@ void runImageBenchmarks()
 	double duration_optimized = timer_optimized.elapsedMicroseconds();
 	std::cout << "Duration for ImageGrayscale_optimized: " << duration_optimized << " Microseconds...\n";
 
-	saveImage("../../../assets/output_optimized", img);
+	saveImage("../../../assets/output_optimized.png", img);
+	reporter.addRecords("ImageGrayscaling_Optimized", img.height * img.width, duration_optimized);
 
 	img = loadImage("../../../assets/test_image.png");
 
@@ -301,10 +304,17 @@ void runImageBenchmarks()
 	double duration_multiThreaded = timer_multiThreaded.elapsedMicroseconds();
 	std::cout << "Duration for ImageGrayscale_MultiThreaded: " << duration_multiThreaded << " Microseconds...\n";
 
-	saveImage("../../../assets/output_multiThreaded", img);
-
+	saveImage("../../../assets/output_multiThreaded.png", img);
+	reporter.addRecords("ImageGrayscaling_MultiThreaded", img.height * img.width, duration_multiThreaded);
 
 	freeImage(img);
+	
+	std::cout << "Saving to CSV...\n";
+	reporter.saveToCsv("../../../results/Image/ImageGrayscaling_results.csv");
+
+	std::cout << "Visualizing...\n";
+	std::system("python \"../../../scripts/results_ImageGrayscaling.py\"");
+	
 
 }
 

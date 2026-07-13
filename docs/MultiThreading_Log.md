@@ -1,4 +1,4 @@
-# Algorithm Log 03: Multi-Threading & The Reality of Hardware Scaling
+# Algorithm Log 03: Multi-Threading
 **Author:** Vaibhav Khokha   
 **Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores

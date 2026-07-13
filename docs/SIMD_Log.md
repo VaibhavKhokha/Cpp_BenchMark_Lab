@@ -1,4 +1,4 @@
-# Algorithm Log 04: AVX2 SIMD & The Silicon Limit
+# Algorithm Log 04: AVX2 SIMD
 **Author:** Vaibhav Khokha   
 **Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores

@@ -1,4 +1,4 @@
-# Algorithm Log 06: Image Processing & Hardware Concurrency
+# Algorithm Log 06: Image Gray-Scaling
 **Author:** Vaibhav Khokha   
 **Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores

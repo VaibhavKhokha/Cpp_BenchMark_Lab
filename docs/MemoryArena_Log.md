@@ -1,4 +1,4 @@
-# Algorithm Log 05: Custom Memory Arenas & Escaping the Kernel
+# Algorithm Log 05: Memory Arenas
 **Author:** Vaibhav Khokha   
 **Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores

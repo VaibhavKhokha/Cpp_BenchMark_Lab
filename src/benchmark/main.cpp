@@ -268,6 +268,7 @@ void runImageBenchmarks()
 {
 	Timer timer_baseline;
 	Timer timer_optimized;
+	Timer timer_multiThreaded;
 
 	Image img = loadImage("../../../assets/test_image.png");
 
@@ -280,6 +281,7 @@ void runImageBenchmarks()
 
 	saveImage("../../../assets/output_baseline.png", img);
 
+	img = loadImage("../../../assets/test_image.png");
 
 	timer_optimized.Start();
 	grayscale_optimized(img);
@@ -289,6 +291,17 @@ void runImageBenchmarks()
 	std::cout << "Duration for ImageGrayscale_optimized: " << duration_optimized << " Microseconds...\n";
 
 	saveImage("../../../assets/output_optimized", img);
+
+	img = loadImage("../../../assets/test_image.png");
+
+	timer_multiThreaded.Start();
+	grayscale_multithreaded(img, std::thread::hardware_concurrency());
+	timer_multiThreaded.Stop();
+
+	double duration_multiThreaded = timer_multiThreaded.elapsedMicroseconds();
+	std::cout << "Duration for ImageGrayscale_MultiThreaded: " << duration_multiThreaded << " Microseconds...\n";
+
+	saveImage("../../../assets/output_multiThreaded", img);
 
 
 	freeImage(img);

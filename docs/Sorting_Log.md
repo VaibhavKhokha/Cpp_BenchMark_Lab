@@ -1,4 +1,4 @@
-# Algorithm Log 07: The Branch Predictor & Hardware Realities
+# Algorithm Log 07: Sorting
 **Author:** Vaibhav Khokha   
 **Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores

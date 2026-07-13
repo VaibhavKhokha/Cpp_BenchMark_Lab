@@ -9,6 +9,7 @@
 #include "MemoryArena.hpp"
 #include "ImageUtils.hpp"
 #include "ImageGrayscale.hpp"
+#include "Sorting.hpp"
 
 void runVectorBenchmarks()
 {
@@ -318,7 +319,24 @@ void runImageBenchmarks()
 
 }
 
+void runSortingBenchmarks()
+{
+	Timer timer_baseline;
+
+	std::vector<int> array = generateRandomArray<int>(100000000);
+
+	timer_baseline.Start();
+	sort_Baseline(array);
+	timer_baseline.Stop();
+
+	double duration_baseline = timer_baseline.elapsedMicroseconds();
+
+	std::cout << "Duration of sorting_Baseline: " << duration_baseline << " Microseconds...\n";
+
+
+}
+
 int main()
 {
-	runImageBenchmarks();
+	runSortingBenchmarks();
 }

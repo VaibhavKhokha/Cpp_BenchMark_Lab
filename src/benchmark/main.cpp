@@ -7,6 +7,8 @@
 #include "BenchMarkReporter.hpp"
 #include "MatrixMath.hpp"
 #include "MemoryArena.hpp"
+#include "ImageUtils.hpp"
+#include "ImageGrayscale.hpp"
 
 void runVectorBenchmarks()
 {
@@ -262,16 +264,38 @@ void CompiledPlotting()
 	std::system("python \"../../../scripts/Compiled_Plotting.py\"");
 }
 
+void runImageBenchmarks()
+{
+	Timer timer_baseline;
+	Timer timer_optimized;
+
+	Image img = loadImage("../../../assets/test_image.png");
+
+	timer_baseline.Start();
+	grayscale_baseline(img);
+	timer_baseline.Stop();
+
+	double duration_baseline = timer_baseline.elapsedMicroseconds();
+	std::cout << "Duration for ImageGrayscale_Baseline: " << duration_baseline << " Microseconds..\n";
+
+	saveImage("../../../assets/output_baseline.png", img);
+
+
+	timer_optimized.Start();
+	grayscale_optimized(img);
+	timer_optimized.Stop();
+
+	double duration_optimized = timer_optimized.elapsedMicroseconds();
+	std::cout << "Duration for ImageGrayscale_optimized: " << duration_optimized << " Microseconds...\n";
+
+	saveImage("../../../assets/output_optimized", img);
+
+
+	freeImage(img);
+
+}
 
 int main()
 {
-	runVectorBenchmarks();
-	runMatrixBenchmarks();
-	runThreadingBenchmarks();
-	runSIMDBenchmarks();
-	runArenaBenchmarks();
-
-	MatrixMathCompiledPlotting_BestAlgo();
-	CompiledPlotting();
-
+	runImageBenchmarks();
 }

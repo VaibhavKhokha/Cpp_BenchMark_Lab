@@ -1,0 +1,3 @@
+Algorithm, InputSize, TimeMicroseconds
+ParseFile_Baseline,1073741824,7.72785e+06
+ParseFile_MMAP,1073741824,1.09247e+06

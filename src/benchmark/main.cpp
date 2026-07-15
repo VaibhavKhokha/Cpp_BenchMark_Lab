@@ -10,6 +10,7 @@
 #include "ImageUtils.hpp"
 #include "ImageGrayscale.hpp"
 #include "Sorting.hpp"
+#include "FileIO.hpp"
 
 void runVectorBenchmarks()
 {
@@ -350,7 +351,46 @@ void runSortingBenchmarks()
 
 }
 
+void generateMassivefile()
+{
+	std::string filepath = "../../../assets/Massive_data.txt";
+
+	size_t size = 1024; //MB
+
+	generateMassivefile(filepath, size);
+
+}
+
+void runIOBenchmarks()
+{
+	Timer timer;
+	BenchMarkReporter reporter;
+
+	std::string filepath = "../../../assets/Massive_data.txt";
+
+	timer.Start();
+	size_t totalLines = parseFile_baseline(filepath);
+	timer.Stop();
+
+	double duration_baseline = timer.elapsedMicroseconds();
+
+	reporter.addRecords("ParseFile_Baseline", 1024 * 1024 * 1024, duration_baseline);
+
+
+	timer.Start();
+	totalLines = parseFile_mmap(filepath);
+	timer.Stop();
+
+	double duration_mmap = timer.elapsedMicroseconds();
+
+	reporter.addRecords("ParseFile_MMAP", 1024*1024*1024, duration_mmap);
+
+	std::cout << "Saving to CSV...\n";
+	reporter.saveToCsv("../../../results/IO/IO_results.csv");
+
+}
+
 int main()
 {
-	runSortingBenchmarks();
+	runIOBenchmarks();
 }

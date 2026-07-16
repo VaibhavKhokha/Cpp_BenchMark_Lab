@@ -88,7 +88,7 @@ Each optimization stage includes:
 ## Repository Structure
 
 ```text
-Cpp_Benchmark_Lab/
+Cpp_Systems_Performance_Lab/
 │
 ├── include/               # Header files
 │

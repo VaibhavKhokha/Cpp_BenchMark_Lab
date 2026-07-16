@@ -52,7 +52,6 @@ plt.tight_layout()
 save_path = '../../../plots/Master_Final_Graph_CPU.png'
 os.makedirs(os.path.dirname(save_path), exist_ok=True)
 plt.savefig(save_path, dpi=300)
-print(f"Master plot saved to {save_path}")
     
 plt.show()
 

@@ -1,28 +1,32 @@
-# Algorithm Log 01: Vector Addition -> Benchmarking CPU performance and Memory Behaviour
+# Algorithm Log 01: Vector Addition - Benchmarking CPU Performance and Memory Behavior
 **Author:** Vaibhav Khokha       
 **Project:** C++ Systems Performance Lab   
+
 ## Benchmark Environment
-CPU: 13th Gen Intel Core i7-13650HX @ 2.60 GHz  
-RAM: 32 GB  
-Compiler: MSVC  
-Target Architecture: x86  
-Operating System: Windows 11  
-Build Configuration: Release  
+
+| Component | Specification |
+|-----------|---------------|
+| CPU | 13th Gen Intel® Core™ i7-13650HX @ 2.60 GHz |
+| RAM | 32 GB |
+| Compiler | MSVC |
+| Target Architecture | x86 |
+| Operating System | Windows 11 |
+| Build Configuration | Release |
 
 ## Introduction
-This is the first algorithm in my performance lab. Before I can write hyper - optimized matrix multiplications or deep learning kernels, I need to understand the absolute basics of CPU memory and timing using a simple Vector Addition.
+This is the first algorithm in my C++ Systems Performance Lab. Before optimizing matrix multiplication kernels, I first need to understand how modern CPUs execute the simplest possible data-parallel workload: vector addition.
 
 ## Phase 1: Building a Real Stopwatch
-Before I could optimize anything, I needed to learn how to actually measure CPU time. Normal C++ functions like `time()` aren't precise enough for modern computers. 
+Before I could optimize anything, I first needed a reliable way to measure execution time. Standard C++ timing functions such as `time()` do not provide sufficient precision for micro-benchmarks.
 
-* **What I built:** A custom `Timer` class using `std::chrono::high_resolution_clock` to measure time in strict microseconds. 
-* **Biggest lesson learned:** Never put `std::cout` inside a loop you are trying to benchmark! I realized that printing to the terminal window takes a massive amount of time because it has to talk to the Operating System and the monitor. If you want to benchmark the CPU, you have to just do math.
+* **What I built:** A custom `Timer` class using `std::chrono::high_resolution_clock` to measure execution time with microsecond resolution. 
+* **Biggest lesson learned:** Never place `std::cout` inside a benchmark loop. Console output introduces significant I/O overhead that can easily dominate the execution time of the algorithm being measured. If the goal is to benchmark computation, the measured region should perform only the computation itself.
 
 ## Phase 2: The Baseline Algorithm & C++ Templates
-I wrote a standard, "dumb" vector addition loop (`result[i] = a[i] + b[i]`) to serve as my baseline. 
+I implemented a baseline scalar vector addition algorithm (`result[i] = a[i] + b[i]`) to serve as the performance reference for all subsequent optimizations. 
 
-* **The Template Trap:** I wanted the function to work for `int`, `float`, and `double`, so I used C++ `template <typename T>`. But I learned that templates aren't actual code; they are just blueprints. If you put the template blueprint in a `.hpp` file but hide the logic in a `.cpp` file, the compiler gets confused and throws Linker Errors.
-* **The Fix:** I learned how to use "Explicit Instantiation" at the bottom of my `.cpp` file to force the compiler to build the specific types I needed. 
+* **The Template Trap:** I wanted the function to support `int`, `float` and `double`, so I implemented it using C++ templates (`template <typename T>`). I learned that templates are compile-time blueprints rather than compiled functions. When the template definition is hidden inside a `.cpp` file instead of being visible in the corresponding header, the compiler cannot generate the required template instantiations, resulting in linker errors.
+* **The Fix:** I solved the problem using **explicit template instantiation**, which instructs the compiler to generate concrete implementations for the required types (`int`, `float` and `double`) even though the template definition resides in a `.cpp` file. 
 
 ## Phase 3: Memory Pre-allocation & Compiler Quirks
 

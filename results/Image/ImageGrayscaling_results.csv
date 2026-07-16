@@ -1,4 +1,4 @@
 Algorithm, InputSize, TimeMicroseconds
-ImageGrayscaling_Baseline,20772150,94219
-ImageGrayscaling_Optimized,20772150,65991
-ImageGrayscaling_MultiThreaded,20772150,15407
+ImageGrayscaling_Baseline,20772150,22541
+ImageGrayscaling_Optimized,20772150,16281
+ImageGrayscaling_MultiThreaded,20772150,9326

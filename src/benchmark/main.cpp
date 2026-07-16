@@ -399,6 +399,8 @@ void runIOBenchmarks()
 
 int main()
 {
+	std::cout << "C++ Benchmark Lab initiated..\n";
+
 	runVectorBenchmarks();
 	runMatrixBenchmarks();
 	runThreadingBenchmarks();
@@ -409,5 +411,7 @@ int main()
 	runImageBenchmarks();
 	runSortingBenchmarks();
 	runIOBenchmarks();
+
+	std::cout << "Benchmarking Finished..\n";
 
 }

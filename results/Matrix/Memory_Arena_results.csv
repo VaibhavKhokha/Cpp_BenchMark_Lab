@@ -1,5 +1,5 @@
 Algorithm, InputSize, TimeMicroseconds
-MatrixMultiply_MemoryArena_SIMD,65536,16334
-MatrixMultiply_MemoryArena_SIMD,262144,15925
-MatrixMultiply_MemoryArena_SIMD,1048576,30807
-MatrixMultiply_MemoryArena_SIMD,4194304,194059
+MatrixMultiply_MemoryArena_SIMD,65536,12349
+MatrixMultiply_MemoryArena_SIMD,262144,26717
+MatrixMultiply_MemoryArena_SIMD,1048576,117421
+MatrixMultiply_MemoryArena_SIMD,4194304,878765

@@ -241,6 +241,8 @@ void runArenaBenchmarks()
 
 	std::cout << "Visualizing...\n";
 	std::system("python \"../../../scripts/results_Arena_plot.py\"");
+
+	std::cout << "Memory Arena Benchmarking competed..\n";
 }
 
 
@@ -274,7 +276,6 @@ void runImageBenchmarks()
 	timer.Stop();
 
 	double duration_baseline = timer.elapsedMicroseconds();
-	std::cout << "Duration for ImageGrayscale_Baseline: " << duration_baseline << " Microseconds..\n";
 
 	saveImage("../../../assets/output_baseline.png", img);
 	reporter.addRecords("ImageGrayscaling_Baseline", img.height * img.width, duration_baseline);
@@ -286,7 +287,6 @@ void runImageBenchmarks()
 	timer.Stop();
 
 	double duration_optimized = timer.elapsedMicroseconds();
-	std::cout << "Duration for ImageGrayscale_optimized: " << duration_optimized << " Microseconds...\n";
 
 	saveImage("../../../assets/output_optimized.png", img);
 	reporter.addRecords("ImageGrayscaling_Optimized", img.height * img.width, duration_optimized);
@@ -298,8 +298,7 @@ void runImageBenchmarks()
 	timer.Stop();
 
 	double duration_multiThreaded = timer.elapsedMicroseconds();
-	std::cout << "Duration for ImageGrayscale_MultiThreaded: " << duration_multiThreaded << " Microseconds...\n";
-
+	
 	saveImage("../../../assets/output_multiThreaded.png", img);
 	reporter.addRecords("ImageGrayscaling_MultiThreaded", img.height * img.width, duration_multiThreaded);
 
@@ -311,6 +310,7 @@ void runImageBenchmarks()
 	std::cout << "Visualizing...\n";
 	std::system("python \"../../../scripts/results_ImageGrayscaling.py\"");
 	
+	std::cout << "Image Grayscaling Benchmarking completed...\n";
 
 }
 
@@ -348,6 +348,8 @@ void runSortingBenchmarks()
 
 	std::cout << "Visualizing...\n";
 	std::system("python \"../../../scripts/results_Sorting_plot.py\"");
+
+	std::cout << "Sorting Benchmarking completed...\n";
 
 }
 
@@ -388,9 +390,24 @@ void runIOBenchmarks()
 	std::cout << "Saving to CSV...\n";
 	reporter.saveToCsv("../../../results/IO/IO_results.csv");
 
+	std::cout << "Visualizing...\n";
+	std::system("python \"../../../scripts/results_io_plot.py\"");
+
+	std::cout << "IO Benchmarking completed...\n";
+
 }
 
 int main()
 {
+	runVectorBenchmarks();
+	runMatrixBenchmarks();
+	runThreadingBenchmarks();
+	runSIMDBenchmarks();
+	runArenaBenchmarks();
+	MatrixMathCompiledPlotting_BestAlgo();
+	CompiledPlotting();
+	runImageBenchmarks();
+	runSortingBenchmarks();
 	runIOBenchmarks();
+
 }

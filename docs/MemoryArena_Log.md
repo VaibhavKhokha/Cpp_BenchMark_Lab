@@ -4,25 +4,25 @@
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores
 
 ## Introduction
-After maxing out the CPU's computational limits with AVX2 Hardware Intrinsics and a 20-core thread pool, I noticed a lingering bottleneck. Even though the math was blisteringly fast, the program still had to constantly halt execution to ask the Windows Operating System for RAM every time it created a matrix using `std::vector`. This meant my code was constantly context-switching between User Mode and Kernel Mode. To achieve absolute hardware saturation, I had to stop asking the OS for permission and manage the physical RAM myself.
+After optimizing computation using cache-aware algorithms, multi-threading and AVX2 SIMD instructions, I turned my attention to memory allocation. While the computational kernels had become significantly faster, repeatedly allocating large matrices still introduced overhead. To reduce this cost, I impemented a Linear Memory Arena that performs a single large allocation up front and then services subsequent allocations from that pre-allocated memory block.
 
 ## Building the Memory Arena
-Standard memory allocation (`new` or `malloc`) is slow because the OS must search for free space, handle security checks and update page tables. To bypass this, I built a Linear Memory Arena.
-* **The Architecture:** When the program boots, it asks the OS for a massive, contiguous block of RAM exactly once (e.g., 500 Megabytes). 
-* **The Execution:** From that point forward, when my matrices need memory, they don't talk to Windows. They talk to my Arena. The Arena simply hands out a raw pointer to the start of the block and slides an offset counter forward.
-* **The Reset:** Instead of individually deallocating matrices (which is slow), the Arena resets instantly by just sliding the offset counter back to zero, allowing the next loop iteration to blindly overwrite the old memory.
+General-purpose allocators such as `new` and `malloc` are designed to handle a wide variety of allocation patterns. While flexible, repeated allocation and deallocation of large matrices introduces additional overhead during benchmarking. To reduce this cost, I implemented a Linear Memory Arena.
+* **The Architecture:** At program startup, the arena performs one large memory allocation (for example, 500 MB) and treats it as a contiguous pool for future allocations.
+* **The Execution:** Whenever a matrix is needed, the arena returns a pointer to the next available region within this pool and advances an internal offset. Since allocations occur sequentially, no complex bookkeeping or per-allocation heap management is required.
+* **The Reset:** Rather than freeing each matrix individually, the arena simply resets the offset back to the beginning of the buffer. This makes deallocation effectively constant-time while allowing the memory to be reused for the next benchmark iteration.
 
-## Wiring the Silicon to the Arena
-The beauty of C++ vectors is that they are just wrappers around C-style arrays. This meant I didn't have to rewrite my complex AVX2 SIMD logic.
-* I replaced the heavy `const std::vector<int>&` parameters with lightweight `const int*` raw pointers.
-* I used `std::fill_n` to initialize the memory blocks directly on the physical silicon.
-* The SIMD instructions (`_mm256_loadu_si256`) seamlessly accepted the raw pointers, completely unaware that the memory was now being managed entirely in User Mode.
+## Integrating the Arena with the Matrix Implementation
+Since the memory arena returns raw pointers, the matrix multiplication routines were modified to operate directly on contiguous arrays instead of `std::vector` objects.
+* **Replacing Containers:** Function parameters were changed from `const std::vector<int>&` to raw pointers (`const int*` and `int*`), allowing the computational kernels to access memory supplied by the arena.
+* **Initialization:** Matrix data was initialized using `std::fill_n`, which operates directly on contiguous memory blocks returned by the allocator.
+* **SIMD Compatibility:** Because AVX2 intrinsics such as `_mm256_loadu_si256` operate on memory addresses rather than C++ containers, the vectorized implementation required only minimal modification after the transition to arena-managed memory.
 
-## The Benchmark Shock & Visualizing the Kernel Trap
-To test the speed, I ran the Arena-backed SIMD algorithm against the Vector-backed SIMD algorithm up to N=2048 (matrices containing over 4.1 million elements, resulting in roughly 8.58 Billion math operations).
-* **Vector-Backed (OS Allocation):** The time scaled aggressively upward as the OS struggled to find and zero out massive blocks of memory.
-* **Arena-Backed (User Allocation):** 181,826 µs (0.18 seconds).
-* **The Verdict:** I plotted both algorithms on a standard linear graph. The math performed by the CPU was absolutely identical in both algorithms. The widening visual gap between the two lines represented pure Operating System overhead. By keeping the program entirely in User Mode on a pre-allocated RAM block, I stripped away the final layer of software latency.
+## Benchmark Results and Analysis
+To evaluate the impact of the custom allocator, I compared the arena-backed implementation with the original `std::vector`-based implementation across matrix sizes up to **N = 2048**. At this size, each matrix contains over 4 million elements and the multiplication performs approximately **8.58 billion** arithmetic operations.
+* **Vector-Based Allocation:** Execution time increased as matrix size grew, reflecting both computation and the repeated cost of dynamic memory allocation.
+* **Arena-Based Allocation:** 181,826 µs (0.18 seconds).
+* **Observation:** The arena-backed implementation consistently outperformed the vector-based implementation for larger matrices. Since both versions executed the same matrix multiplication algorithm, the improvement can largely be attributed to reducing repeated allocation and deallocation overhead during benchmarking.
 
 ## Final Thoughts
-I have successfully isolated the CPU from the OS. My program now controls the cache logic, the thread scheduler, the AVX2 registers, and the RAM distribution.
+This phase demonstrated that memory allocation strategy can significantly influence the performance of computation-intensive applications. By replacing repeated dynamic allocations with linear memory arena, I reduced allocation overhead and improved memory reuse while leaving the computational kernel unchanged.

@@ -4,24 +4,27 @@
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores
 
 ## Introduction
-After maximizing CPU throughput on pure mathematical matrices, the lab transitioned to raw memory manipulation via Image Processing (Grayscale Conversion). Processing a real `.png` file requires decoding compressed data into a massive 1-Dimensional array of bytes, presenting new challenges in data structuring, hardware bottlenecks, and concurrent memory alignment. 
+After optimizing matrix multiplication, I wanted to apply similar performance optimization techniques to a real-world workload. I chose grayscale image conversion, which involves processing millions of pixels stored as a contiguous array of bytes. Unlike the previous experiments, this task introduced additional considerations such as memory layout, floating-point computation and multi-threaded processing.
 
 ## The Optimization Pipeline (4K Image - 8.2 Million Pixels)
 
-### 1. The Naive Baseline (The FPU Bottleneck)
+### 1. Baseline Implementation
 The initial approach iterated through the flat byte array, extracting Red, Green, and Blue values. It utilized the standard luminosity formula `(0.299 * R + 0.587 * G + 0.114 * B)`.
-* **The Hardware Flaw:** This forced the CPU to constantly switch between integer data (`uint8_t`) and floating-point math (`float`). Floating-point operations require the CPU's Floating-Point Unit (FPU), which takes significantly more clock cycles than basic integer math.
+* **The Hardware Flaw:** The standard grayscale formula uses floating-point arithmetic, requiring repeated conversions between integer pixel values and floating-point computations. Since this operation is performed for every pixel in the image, the arithmetic cost becomes noticeable for large images.
 * **Execution Time:** 22,691 µs (~22.7 ms)
 
-### 2. Fixed-Point Arithmetic (ALU Isolation)
-To bypass the slow FPU and expensive type-casting, the algorithm was rewritten using fixed-point arithmetic. The decimal multipliers were scaled by 256, allowing the division to be handled by a lightning-fast bitwise right-shift `>> 8`. 
+### 2. Fixed-Point Arithmetic
+To reduce the cost of floating-point operations, I replaced the floating-point coefficients with scaled integer coefficients. 
 * **The Math:** `uint8_t grey = (r * 77 + g * 150 + b * 29) >> 8;`
-* **The Result:** The math was isolated entirely within the CPU's Arithmetic Logic Unit (ALU). Execution time dropped to **16,246 µs (~16.2 ms)**, yielding a ~28% reduction in execution time without changing the algorithm's Big-O complexity.
+* **Execution Time:** 16,246 µs (~16.2 ms)
+* **Observation:** Replacing floating-point arithmetic with fixed-point arithmetic reduced the execution time by approximately 28% while producing visually equivalent grayscale output.
+* **The Result:** This implementation produced nearly identical grayscale values while performing the computation entirely with integer arithmetic.
 
-### 3. Hardware Concurrency (Escaping the Pixel Trap)
+### 3. Multi-Threaded Implementation
 The final iteration scaled the optimized ALU math across a 20-logical-core Thread Pool. 
-* **The Engineering Challenge:** Distributing work by raw bytes causes memory misalignment (threads starting on a Green byte instead of a Red byte, corrupting the image). The architecture was refactored to chunk by *pixel index*, with each thread independently calculating its absolute byte offset in memory.
-* **The Result:** Execution time plummeted to **9,462 µs (~9.5 ms)**. 
+* **The Engineering Challenge:** * **Execution Time:** 16,246 µs (~16.2 ms)
+* **Observation:** Since each pixel consists of three consecutive bytes (RGB), partitioning the image by arbitrary byte offsets could cause a thread to begin processing in the middle of a pixel. To avoid this, the workload was divided by pixel index, allowing each thread to compute its corresponding byte offset independently.
+* **The Result:** The multi-threaded implementation reduced the execution time to **9,462 µs (~9.5 ms)** by distributing the workload across all available logical cores.
 
 ## Final Thoughts
-By stripping away floating-point overhead and correctly aligning a multi-threaded workload across a flat memory buffer, the algorithm achieved a **2.4x total speedup**. The CPU is now capable of processing 8.2 million pixels in under 10 milliseconds.
+This experiment showed that both arithmetic optimization and parallel execution can significantly improve the performance of image processing workloads. Replacing floating-point arithmetic with an equivalent fixed-point implementation reduced the computational cost, while multi-threading further improved throughput by processing independent regions of the image concurrently. Together, these optimizations reduced the execution time from approximately 22.7 ms to 9.5 ms, achieving an overall speedup of about 2.4×.

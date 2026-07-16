@@ -1,42 +1,200 @@
-#  Cpp_BenchMark_Lab
+# Cpp_Benchmark_Lab
 
-A high-performance C++ benchmarking and systems optimization laboratory. 
+A high-performance **C++20** systems programming project focused on understanding how modern hardware affects algorithm performance.
 
-This project is not just a collection of algorithms; it is a deep dive into hardware-level optimization. Starting with standard C++ implementations, this lab systematically strips away compiler reliance and OS overhead to push physical silicon to its theoretical limits.
+Rather than simply implementing algorithms, this project explores how software interacts with the CPU, memory hierarchy, operating system, and storage subsystem through progressively optimized implementations. Each module includes benchmark results, performance analysis, and architectural observations.
 
-##  Project Goals
-- Implement classic mathematical algorithms and data structures.
-- Benchmark execution time across massive datasets (1 Billion+ operations).
-- Study and optimize L1/L2 cache spatial locality.
-- Eliminate thread-creation overhead using custom Thread Pools.
-- Bypass standard C++ utilizing AVX2 SIMD Hardware Intrinsics.
-- Eradicate OS Kernel context-switching via Custom Memory Arenas.
+---
 
-##  The Optimization Journey (Matrix Multiplication)
-This lab traces the architectural evolution of an `O(N^3)` matrix multiplication algorithm:
-1. **The Baseline:** Standard 3-loop implementation trusting the compiler.
-2. **Memory Bandwidth & Cache:** Loop reordering (`i-k-j`) to optimize for CPU cache lines, preventing cache misses.
-3. **Hardware Concurrency:** Horizontal matrix slicing distributed across a custom 20-logical-core Thread Pool.
-4. **Silicon Intrinsics:** Injecting Intel AVX2 instructions (`_mm256`) to process 8 integers per clock cycle, bypassing standard SISD math.
-5. **The Memory Arena:** Replacing `std::vector` with a custom pre-allocated memory block to bypass Windows OS memory allocation latency (User Mode vs. Kernel Mode). 
+## Features
 
-*Result: Achieved a massive multi-magnitude speedup, dropping 8.5+ Billion operations from seconds down to fractions of a second.*
+- Matrix multiplication benchmarking
+- Cache-aware algorithm optimization
+- Multi-threaded implementations
+- AVX2 SIMD vectorization
+- Custom Linear Memory Arena
+- Image processing optimization
+- Branchless sorting algorithms
+- Memory-mapped file I/O
+- Automated benchmarking
+- Performance visualization using Python
 
-##  Build & Run
-This project uses standard C++ features and compiler intrinsics.
-1. Clone the repository to your local machine.
-2. Open the project in your preferred IDE (e.g., Visual Studio or via CMake).
-3. Build the project strictly in **Release Mode**. *(Note: This is critical for accurate hardware benchmarking; Debug mode will completely skew the CPU results).*
-4. Execute the binary to run the benchmarks. The program will output `.csv` data logs into the `results/` folder.
-5. Run the Python scripts located in `scripts/` to generate the log-log hardware scaling visualizations in the `plots/` folder.
+---
 
-##  Project Structure
+## Optimization Pipeline
+
+The project documents a complete optimization journey across multiple optimization modules.
+
+| Log | Topic |
+|-----:|-------|
+| 01 | Matrix Multiplication Baseline |
+| 02 | Cache Optimization |
+| 03 | Multi-Threading |
+| 04 | AVX2 SIMD Vectorization |
+| 05 | Linear Memory Arena |
+| 06 | Image Grayscale Optimization |
+| 07 | Branchless Sorting |
+| 08 | Memory-Mapped Disk I/O |
+
+Each optimization stage includes:
+
+- Implementation details
+- Benchmark results
+- Performance analysis
+- Hardware observations
+- Visualization plots
+
+---
+
+## Topics Covered
+
+- CPU cache locality
+- Memory hierarchy
+- Thread-level parallelism
+- SIMD vectorization (AVX2)
+- Branch prediction
+- Memory bandwidth
+- Custom memory allocators
+- Branchless programming
+- Memory-mapped files
+- Benchmark methodology
+- Systems programming
+- Performance engineering
+
+---
+
+## Technologies
+
+### Languages
+
+- C++20
+- Python
+
+### Libraries
+
+- C++ Standard Library
+- AVX2 Intrinsics (`immintrin.h`)
+- Win32 API
+- Pandas
+- Matplotlib
+
+### Build System
+
+- CMake 3.15+
+- MSVC (Visual Studio 2022 recommended)
+
+---
+
+## Repository Structure
+
 ```text
-Cpp_BenchMark_Lab/
-├── src/algorithms/     # Core algorithmic logic (SIMD, standard, etc.)
-├── src/benchmark/      # Benchmarking triggers and Timer classes
-├── src/utils/          # Custom Memory Arenas and Thread Pools
-├── include/            # C++ Header files
-├── docs/               # Architecture logs and performance teardowns
-└── scripts/            # Python Pandas/Matplotlib visualization scripts
+Cpp_Benchmark_Lab/
+│
+├── include/               # Header files
+│
+├── src/
+│   ├── algorithms/        # Algorithm implementations
+│   ├── benchmark/         # Benchmark framework
+│   ├── utils/             # Thread Pool, Memory Arena, utilities
+|   └── IO/                # File Parsing & I/O
+│
+├── docs/                  # Optimization logs
+│
+├── results/               # Benchmark CSV files
+│
+├── plots/                 # Generated graphs
+│
+├── scripts/               # Python visualization scripts
+│
+├── CMakeLists.txt
+├── LICENSE
+└── README.md
 ```
+
+---
+
+## Building
+
+### Requirements
+
+- C++20 compatible compiler
+- CMake 3.15 or newer
+- Visual Studio 2022 (recommended)
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/VaibhavKhokha/Cpp_Benchmark_Lab.git
+
+cd Cpp_Benchmark_Lab
+```
+
+### Configure
+
+```bash
+cmake -S . -B build
+```
+
+### Build
+
+```bash
+cmake --build build --config Release
+```
+
+> **Note:** All benchmarks should be executed in **Release** mode. Debug builds disable many compiler optimizations and do not produce representative performance measurements.
+
+---
+
+## Running Benchmarks
+
+Execute the generated executable.
+
+Benchmark results are exported as CSV files in the `results/` directory.
+
+The Python scripts inside `scripts/` can then be used to generate performance visualizations in the `plots/` directory.
+
+---
+
+## Benchmark Methodology
+
+Benchmarks are performed using:
+
+- Multiple benchmark iterations
+- High-resolution timers
+- Large workloads
+- Best execution time recorded
+- Release-mode compilation
+
+Performance is analyzed using generated CSV files and visualization scripts.
+
+---
+
+## Learning Objectives
+
+This project explores practical aspects of systems programming and performance engineering, including:
+
+- Cache-aware programming
+- Performance optimization
+- SIMD programming with AVX2
+- Multi-threading
+- Custom memory management
+- Branch prediction
+- Operating system interaction
+- High-performance file I/O
+- Benchmark design and analysis
+
+---
+
+## License
+
+This project is licensed under the **MIT License**.
+
+See the [LICENSE](LICENSE) file for more information.
+
+---
+
+## Author
+
+**Vaibhav Khokha**
+
+Systems Programming • Performance Engineering • Modern C++

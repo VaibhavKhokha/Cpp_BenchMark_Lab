@@ -1,30 +1,56 @@
 # Algorithm Log 07: Sorting
-**Author:** Vaibhav Khokha   
+**Author:** Vaibhav Khokha  
 **Project:** C++ Systems Performance Lab  
 **Environment:** MSVC / x86 / Release Mode / 20 Logical Cores
 
 ## Introduction
-Modern CPUs utilize a Branch Predictor to guess the outcome of conditional statements (`if/else`) to keep their instruction pipelines full. If the prediction is wrong, the CPU suffers a massive latency penalty known as a Pipeline Flush. This module demonstrates the physical cost of branch mispredictions during sorting, implements a branchless algorithm to bypass the predictor entirely, and explores the limits of software-defined memory optimizations.
+After exploring optimizations for matrix multiplication and image processing, I wanted to investigate another important aspect of CPU performance: branch prediction. Many comparison-based sorting algorithms rely heavily on conditional branches, and the efficiency of these branches depends on how accurately the processor can predict their outcome. This experiment compares a traditional comparison-based sorting algorithm with a branch-minimized radix sort while also exploring the practical limits of manual cache optimizations.
 
 ## The Workload: Sorting 100 Million Random Integers
 
-### Phase 1: The Branch Prediction Penalty (`std::sort`)
-The C++ Standard Library uses IntroSort (a hybrid of Quicksort, Heapsort, and Insertion Sort). While algorithmically optimal ($O(N \log N)$), it relies heavily on evaluating elements via conditional branches (`if a < b`). 
-* **Random Data Execution:** 6,480,810 µs (~6.48 seconds). The predictor guessed incorrectly roughly 50% of the time, resulting in millions of pipeline flushes.
-* **Pre-Sorted Data Execution:** 582,486 µs (~0.58 seconds). With perfectly predictable data, the pipeline never flushed, yielding an 11x speedup on the exact same hardware and code.
+### 1. Baseline Implementation (`std::sort`)
+The first benchmark used the C++ Standard Library implementation of `std::sort`, which is typically implemented as Introsort—a hybrid of Quicksort, Heapsort, and Insertion Sort. Since comparison-based sorting repeatedly evaluates conditions such as `a < b`, its performance can be influenced by branch prediction.
 
-### Phase 2: Bypassing the Predictor (Base-256 Radix Sort)
-To defeat the hardware penalty of random data, the architecture was rewritten to eliminate conditional comparisons entirely. A Base-256 Radix Sort was implemented. It isolates individual bytes using bitwise shifts (`>>`) and masks (`& 0xFF`), tallying occurrences into a 256-element histogram. A prefix-sum array then converts these tallies into exact memory offsets.
-* **Execution Time:** 854,858 µs (~0.85 seconds).
-* **The Result:** By replacing `if` logic with pure, forward-marching memory reads/writes, the algorithm achieved a **7.5x speedup** over `std::sort` on completely random data.
+* **Random Input:** 6,480,810 µs (~6.48 s)
+* **Pre-Sorted Input:** 582,486 µs (~0.58 s)
 
-### Phase 3: The Hardware Reality (Failed Optimization)
-An attempt was made to further optimize the Radix Sort by implementing "Software Write-Combining." The goal was to stop Cache Thrashing by writing data into 64-integer L1 Cache buffers, and only flushing to main RAM when a buffer was completely full (aligning perfectly with 64-byte Cache Lines). 
-* **Execution Time:** 990,339 µs (~0.99 seconds).
-* **The Post-Mortem:** The optimization was logically sound but physically slower for three reasons:
-  1. **L1 Cache Spill:** The 65KB buffer matrix exceeded the physical L1 Data Cache capacity of the cores, spilling into L2 and causing internal cache thrashing.
-  2. **Re-introducing Branches:** The logic required an `if (buffer_full)` check in the innermost loop, re-introducing the exact Branch Predictor penalty we had just built the algorithm to escape.
-  3. **Redundant Engineering:** Modern x86 processors feature dedicated silicon called Write-Combining Buffers (WCBs). The CPU was already buffering and aligning the memory writes at the hardware level for free. 
+* **Observation:** Sorting pre-sorted data completed significantly faster than sorting randomly ordered data. One contributing factor is that predictable branch outcomes allow the processor's branch predictor to operate more effectively, reducing the number of costly pipeline stalls.
+
+---
+
+### 2. Branch-Minimized Sorting (Base-256 Radix Sort)
+
+To reduce the dependence on conditional comparisons, I implemented a Base-256 Least Significant Digit (LSD) Radix Sort. Rather than comparing elements, the algorithm processes one byte at a time using bitwise operations and counting arrays.
+
+* **Implementation:**
+    * Individual bytes were extracted using bitwise shifts (`>>`) and masks (`& 0xFF`).
+    * A 256-element histogram counted the frequency of each byte value.
+    * Prefix sums converted these counts into output positions for stable redistribution.
+
+* **Execution Time:** 854,858 µs (~0.85 s)
+
+* **Observation:** Since radix sort avoids most comparison-based branching, it performed substantially better than `std::sort` on randomly distributed integers, achieving an overall speedup of approximately **7.5×** for this workload.
+
+---
+
+### 3. Exploring Software Write Buffering
+
+To investigate whether memory writes could be optimized further, I implemented a software-managed buffering strategy. The idea was to accumulate writes into fixed-size buffers before copying them back to the output array, with the goal of improving cache locality.
+
+* **Execution Time:** 990,339 µs (~0.99 s)
+
+* **Observation:** Despite the additional optimization effort, this implementation performed slightly worse than the original radix sort.
+
+Several factors likely contributed to this result:
+
+1. **Cache Capacity:** The additional buffering structures increased memory usage and may have exceeded the capacity of the L1 data cache, introducing additional cache misses.
+
+2. **Additional Control Logic:** Buffer management required extra conditional checks inside the inner loop, partially offsetting the benefit of reducing memory writes.
+
+3. **Hardware Optimizations:** Modern processors already contain sophisticated write buffers and cache management mechanisms, making it difficult for a software implementation to outperform the hardware's built-in memory subsystem.
+
+---
 
 ## Final Thoughts
-This module proved that bypassing the CPU's Branch Predictor can yield massive performance gains. However, it also served as a strict reminder: in lower-level Systems Engineering, theoretical software optimizations will fail if they conflict with the physical architecture of the silicon.
+
+This experiment demonstrated that algorithm design and processor architecture are closely connected. Comparison-based sorting algorithms can be affected by branch prediction, while radix sort benefits from replacing comparisons with predictable memory accesses and bitwise operations. It also showed that not every optimization produces a performance improvement—modern processors already perform many low-level memory optimizations automatically. Profiling and benchmarking remain essential for determining whether an optimization is genuinely beneficial.

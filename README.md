@@ -189,7 +189,7 @@ This project explores practical aspects of systems programming and performance e
 
 This project is licensed under the **MIT License**.
 
-See the [LICENSE](LICENSE) file for more information.
+See the [LICENSE](LICENSE.txt) file for more information.
 
 ---
 

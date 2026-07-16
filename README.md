@@ -1,4 +1,4 @@
-# Cpp_Benchmark_Lab
+# C++_Systems_Performance_Lab
 
 A high-performance **C++20** systems programming project focused on understanding how modern hardware affects algorithm performance.
 

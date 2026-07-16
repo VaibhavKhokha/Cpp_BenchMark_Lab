@@ -15,6 +15,7 @@
 
 ## Introduction
 This is the first algorithm in my C++ Systems Performance Lab. Before optimizing matrix multiplication kernels, I first need to understand how modern CPUs execute the simplest possible data-parallel workload: vector addition.  
+
 The goal wasn't just to make the code faster. I wanted to learn how compiler optimizations, memory allocation, CPU caches and benchmarking techniques affect the performance of even a simple algorithm.
 
 ## Phase 1: Building a Real Stopwatch

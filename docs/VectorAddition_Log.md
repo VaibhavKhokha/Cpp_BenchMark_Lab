@@ -1,7 +1,13 @@
-# Algorithm Log 01: Vector Addition
+# Algorithm Log 01: Vector Addition -> Benchmarking CPU performance and Memory Behaviour
 **Author:** Vaibhav Khokha       
-**Project:** C++ Systems Performance Lab  
-**Environment:** MSVC / x86 / Release Mode  
+**Project:** C++ Systems Performance Lab   
+## Benchmark Environment
+CPU: 13th Gen Intel Core i7-13650HX @ 2.60 GHz
+RAM: 32 GB
+Compiler: MSVC
+Target Architecture: x86
+Operating System: Windows 11
+Build Configuration: Release
 
 ## Introduction
 This is the first algorithm in my performance lab. Before I can write hyper - optimized matrix multiplications or deep learning kernels, I need to understand the absolute basics of CPU memory and timing using a simple Vector Addition.
